@@ -9,13 +9,15 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import lt.vilniustech.ezukauskas.nativecallhook.NativeCallHook;
+
 public class MainActivity extends AppCompatActivity {
 
     static {
-        System.loadLibrary("nativecallhook");
+        System.loadLibrary("liba");
     }
-
-    public native String getHelloWorld();
+    
+    public native void testLibraryLoading();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,7 +30,12 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-        String message = getHelloWorld();
-        Log.d("NativeCallHook", message);
+        String message = NativeCallHook.getHelloWorld();
+        Log.d("MainActivity", "Received from library: " + message);
+        
+        NativeCallHook.logMessage("Hello from MainActivity through JNI!");
+        
+        Log.d("MainActivity", "Testing LibA -> LibB loading...");
+        testLibraryLoading();
     }
 }

@@ -21,3 +21,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "Native Call Hook"
 include ':app'
+include ':nativecallhook'

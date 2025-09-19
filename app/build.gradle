@@ -37,10 +37,10 @@ android {
             version '3.22.1'
         }
     }
-    ndkVersion '27.0.12077973'
 }
 
 dependencies {
+    implementation project(':nativecallhook')
 
     implementation libs.appcompat
     implementation libs.material
