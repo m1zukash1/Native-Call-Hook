@@ -1,0 +1,16 @@
+Library directory: /data/app/~~E6ldWSdbeIHCwTluBWHz7Q==/lt.vilniustech.ezukauskas.nativecallhook-PTnDJlSCnaKednD2FnV7RQ==/lib/arm64
+
+--- libliba.so (normal, unprotected) first 16 bytes ---
+00000000: 7f45 4c46 0201 0100 0000 0000 0000 0000  .ELF............
+Valid ELF: True
+
+--- liblibb.so (encrypted, protected) first 16 bytes ---
+00000000: 162c 252f 6b68 6869 6969 6969 6969 6969  .,%/khhiiiiiiiii
+Valid ELF: False
+
+--- libnativecallhook.so (hook library) first 16 bytes ---
+00000000: 7f45 4c46 0201 0100 0000 0000 0000 0000  .ELF............
+Valid ELF: True
+
+RESULT: liblibb.so does NOT contain ELF magic.
+The encrypted first bytes (16 2c 25 2f) correspond to 7f 45 4c 46 XOR 0x69.

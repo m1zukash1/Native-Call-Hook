@@ -1,0 +1,7 @@
+Model: Pixel 9
+Android version: 16
+API level: 36
+Build ID: CP1A.260305.018
+Security patch: 2026-03-05
+ABI: arm64-v8a
+Kernel: 6.1.145-android14-11-gfa1d6308d1fe-ab14691759

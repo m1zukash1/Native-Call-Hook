@@ -1,0 +1,68 @@
+graph TB
+    subgraph DevMachine["&laquo;device&raquo; Developer Machine"]
+        direction TB
+        subgraph Toolchain["Build Toolchain"]
+            NDK["Android NDK<br/>+ CMake 3.22.1"]
+            Python["Python 3<br/>(encrypt_lib.py)"]
+            Gradle["Gradle + AGP"]
+        end
+        NDK -->|"compiles .cpp<br/>to .so"| BuildOutput
+        subgraph BuildOutput["Build Output"]
+            SoPlain["lib_a.so<br/>libnativecallhook.so<br/>(plain ELF)"]
+            SoEncrypted["lib_b.so<br/>(XOR encrypted,<br/>invalid ELF header)"]
+        end
+        Python -->|"XOR encrypts<br/>in-place"| SoEncrypted
+        BuildOutput -->|"packaged by"| Gradle
+    end
+
+    Gradle -->|"produces"| APK
+
+    subgraph APK["&laquo;artifact&raquo; APK"]
+        direction TB
+        APKLibDir["lib/arm64-v8a/"]
+        APKNch["libnativecallhook.so<br/>(plain ELF)"]
+        APKBh["libbytehook.so<br/>(plain ELF)"]
+        APKLibA["lib_a.so<br/>(plain ELF)"]
+        APKLibB["lib_b.so<br/>(encrypted, invalid ELF)"]
+        APKLibDir --- APKNch
+        APKLibDir --- APKBh
+        APKLibDir --- APKLibA
+        APKLibDir --- APKLibB
+    end
+
+    APK -->|"install +<br/>extractNativeLibs=true"| Device
+
+    subgraph Device["&laquo;device&raquo; Android Device (ARM64)"]
+        direction TB
+
+        subgraph DiskStorage["Persistent Storage"]
+            ExtractedDir["/data/app/.../lib/arm64-v8a/"]
+            DiskNch["libnativecallhook.so<br/>(plain ELF)"]
+            DiskBh["libbytehook.so<br/>(plain ELF)"]
+            DiskLibA["lib_a.so<br/>(plain ELF)"]
+            DiskLibB["lib_b.so<br/>(encrypted, invalid ELF)<br/>&laquo;not loadable by linker&raquo;"]
+            ExtractedDir --- DiskNch
+            ExtractedDir --- DiskBh
+            ExtractedDir --- DiskLibA
+            ExtractedDir --- DiskLibB
+        end
+
+        subgraph ProcessMem["&laquo;execution environment&raquo;<br/>Application Process Memory"]
+            direction TB
+            ART["ART / JVM<br/>(MainActivity, NativeCallHook)"]
+            LoadedNch["libnativecallhook.so<br/>(mapped from disk)"]
+            LoadedBh["libbytehook.so<br/>(mapped from disk)"]
+            LoadedLibA["lib_a.so<br/>(mapped from disk)"]
+            MemFD["memfd: decrypted_lib<br/>(anonymous, RAM-backed)"]
+            LoadedLibB["lib_b.so<br/>(mapped from memfd)<br/>&laquo;decrypted ELF in memory only&raquo;"]
+            ART --> LoadedNch
+            LoadedNch --> LoadedBh
+            ART --> LoadedLibA
+            MemFD -->|"android_dlopen_ext<br/>LIBRARY_FD"| LoadedLibB
+        end
+
+        DiskNch -->|"mmap"| LoadedNch
+        DiskBh -->|"mmap"| LoadedBh
+        DiskLibA -->|"mmap"| LoadedLibA
+        DiskLibB -->|"read + XOR decrypt<br/>+ write to memfd"| MemFD
+    end

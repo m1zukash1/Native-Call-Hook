@@ -6,9 +6,13 @@ android {
     namespace 'lt.vilniustech.ezukauskas.nativecallhook'
     compileSdk 36
 
+    buildFeatures {
+        prefab true
+    }
+
     defaultConfig {
-        minSdk 21
-        targetSdk 36
+        minSdk 26
+        targetSdk 35  // Maximum supported by bytehook 1.1.1
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
@@ -17,6 +21,12 @@ android {
             cmake {
                 cppFlags ""
             }
+        }
+
+        ndk {
+            // bytehook/shadowhook only support ARM architectures
+            // Use ARM device or ARM-based emulator for testing
+            abiFilters 'armeabi-v7a', 'arm64-v8a'
         }
     }
 
@@ -34,6 +44,12 @@ android {
         }
     }
 
+    packagingOptions {
+        // bytehook and shadowhook libraries need to be included
+        pickFirst '**/libbytehook.so'
+        pickFirst '**/libshadowhook.so'
+    }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_11
         targetCompatibility JavaVersion.VERSION_11
@@ -43,6 +59,7 @@ android {
 dependencies {
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'com.google.android.material:material:1.10.0'
+    implementation 'com.bytedance:bytehook:1.1.1'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'

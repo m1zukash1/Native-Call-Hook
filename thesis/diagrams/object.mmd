@@ -1,0 +1,37 @@
+classDiagram
+    direction LR
+
+    class mainActivity ["mainActivity : MainActivity"] {
+        initialized = true
+    }
+
+    class hookStub ["hookStub : bytehook_stub_t"] {
+        symbol = "__loader_dlopen"
+        proxy = hooked_dlopen()
+    }
+
+    class libaHandle ["libaHandle : void*"] {
+        path = lib/arm64/liba.so
+    }
+
+    class encryptedFile ["encryptedFile : File"] {
+        path = lib/arm64/liblibb.so
+        state = XOR-encrypted
+    }
+
+    class memfd ["memfd : int"] {
+        name = "decrypted_lib"
+        content = decrypted ELF
+    }
+
+    class libbHandle ["libbHandle : void*"] {
+        source = in-memory (memfd)
+        exports = call_logcat()
+    }
+
+    mainActivity --> hookStub : 1. NativeCallHookLib installs
+    mainActivity --> libaHandle : 2. loads liba.so
+    libaHandle --> encryptedFile : 3. dlopen("liblibb.so")
+    encryptedFile --> memfd : 4. read + XOR decrypt
+    memfd --> libbHandle : 5. android_dlopen_ext()
+    libaHandle --> libbHandle : 6. dlsym("call_logcat")

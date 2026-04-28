@@ -1,0 +1,65 @@
+classDiagram
+    direction TB
+
+    class MainActivity {
+        <<Android Activity>>
+        +onCreate() void
+        +loadEncryptedLibrary()* void
+    }
+
+    class NativeCallHook {
+        <<Java API>>
+        +initialize()$ boolean
+        +getStatus()$ String
+        +log(msg)$ void
+    }
+
+    class NativeCallHookLib {
+        <<libnativecallhook.so>>
+        +JNI_OnLoad() jint
+        -init_hook() void
+        -hooked_dlopen(filename, flags) void*
+        -load_decrypted_library(path, flags) void*
+        -is_encrypted_library(filename) bool
+    }
+
+    class LibA {
+        <<liba.so>>
+        +loadEncryptedLibrary() void
+    }
+
+    class LibB {
+        <<liblibb.so — encrypted at rest>>
+        +call_logcat(message) void
+    }
+
+    class EncryptTool {
+        <<build-time script>>
+        +xor_encrypt(file, key) void
+    }
+
+    class ByteHook {
+        <<libbytehook.so>>
+        +bytehook_hook_all(sym, hook_fn) stub
+    }
+
+    class BionicLinker {
+        <<Android dynamic linker>>
+        +__loader_dlopen(filename, flags) void*
+        +android_dlopen_ext(filename, flags, extinfo) void*
+    }
+
+    MainActivity --> NativeCallHook : initialize()
+    MainActivity ..> LibA : «JNI»
+
+    NativeCallHook ..> NativeCallHookLib : «JNI binding»
+
+    NativeCallHookLib --> ByteHook : installs hook
+    ByteHook ..> BionicLinker : intercepts __loader_dlopen
+
+    LibA --> BionicLinker : dlopen("liblibb.so")
+    BionicLinker ..> NativeCallHookLib : redirected to hooked_dlopen()
+    NativeCallHookLib --> BionicLinker : android_dlopen_ext() from memfd
+    NativeCallHookLib ..> LibB : decrypts and loads
+
+    EncryptTool ..> LibB : XOR-encrypts at build time

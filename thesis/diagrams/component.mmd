@@ -1,0 +1,58 @@
+graph TB
+    subgraph BuildTime["Build-Time Environment"]
+        direction TB
+        CMake["CMake / NDK<br/>Compiler"]
+        EncTool["encrypt_lib.py<br/>&laquo;encryption tool&raquo;"]
+        CMake -->|"compiles"| LibBRaw["lib_b.so<br/>(plain ELF)"]
+        LibBRaw -->|"input"| EncTool
+        EncTool -->|"overwrites with<br/>encrypted bytes"| LibBEnc["lib_b.so<br/>(encrypted, invalid ELF)"]
+    end
+
+    subgraph RuntimeProcess["Application Process (Runtime)"]
+        direction TB
+
+        subgraph JavaLayer["Java / ART Layer"]
+            direction LR
+            MA["MainActivity"]
+            NCH["NativeCallHook"]
+            MA -->|"static block:<br/>initialize()"| NCH
+        end
+
+        subgraph NativeLayer["Native Layer"]
+            direction TB
+            JNIBridge["jni_bridge.cpp<br/>&laquo;JNI interface&raquo;"]
+            Core["nativecallhook.cpp<br/>&laquo;native protection core&raquo;"]
+            Registry["ENCRYPTED_LIBS[]<br/>&laquo;protected library registry&raquo;"]
+            Core -->|"consults"| Registry
+        end
+
+        subgraph External["External Libraries"]
+            direction LR
+            BH["ByteHook 1.1.1<br/>&laquo;PLT/GOT hooking&raquo;"]
+        end
+
+        subgraph SystemLayer["Android System"]
+            direction LR
+            Linker["Bionic Linker<br/>(__loader_dlopen)"]
+            Kernel["Linux Kernel<br/>(memfd_create syscall)"]
+        end
+
+        NCH -->|"System.loadLibrary<br/>(triggers constructor)"| JNIBridge
+        JNIBridge --> Core
+        Core -->|"bytehook_init<br/>bytehook_hook_all"| BH
+        BH -->|"hooks PLT/GOT of"| Linker
+
+        MA -->|"System.loadLibrary<br/>(lib_a)"| Linker
+        LibA["lib_a.so<br/>&laquo;demo caller&raquo;"]
+        Linker -->|"loads"| LibA
+        LibA -->|"dlopen('lib_b.so')<br/>(intercepted)"| Core
+
+        Core -->|"read encrypted file<br/>from disk"| LibBDisk["lib_b.so<br/>(encrypted, on disk)"]
+        Core -->|"syscall(__NR_memfd_create)"| Kernel
+        Core -->|"android_dlopen_ext<br/>(LIBRARY_FD)"| Linker
+
+        LibBMem["lib_b.so<br/>(decrypted, in memfd)"]
+        Linker -->|"maps into<br/>process memory"| LibBMem
+    end
+
+    LibBEnc -->|"packaged in APK<br/>extracted to disk"| LibBDisk

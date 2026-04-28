@@ -1,0 +1,15 @@
+--- All interception log lines ---
+04-27 18:46:42.692 11221 11221 I NATIVECALLHOOK: Intercepted dlopen for encrypted library: liblibb.so
+
+Interception lines mentioning liba: 0
+RESULT: libliba.so was NOT routed through decryption (correct behavior).
+
+--- Full logcat ---
+--------- beginning of main
+04-27 18:46:42.656 11221 11221 I NATIVECALLHOOK: dlopen hook installed successfully
+04-27 18:46:42.692 11221 11221 I NATIVECALLHOOK: NativeCallHook active â€” hooks installed
+04-27 18:46:42.692 11221 11221 I NATIVECALLHOOK: MainActivity started
+04-27 18:46:42.692 11221 11221 I NATIVECALLHOOK: Intercepted dlopen for encrypted library: liblibb.so
+04-27 18:46:42.692 11221 11221 I NATIVECALLHOOK: Loading encrypted library: /data/app/~~E6ldWSdbeIHCwTluBWHz7Q==/lt.vilniustech.ezukauskas.nativecallhook-PTnDJlSCnaKednD2FnV7RQ==/lib/arm64/liblibb.so
+04-27 18:46:42.694 11221 11221 I NATIVECALLHOOK: Successfully loaded decrypted library from memfd
+04-27 18:46:42.694 11221 11221 I NATIVECALLHOOK: LibB: Hello from LibB, called by LibA after decryption

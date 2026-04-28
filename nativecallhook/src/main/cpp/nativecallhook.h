@@ -3,7 +3,7 @@
 
 #include <string>
 
-std::string getHelloWorldMessage();
-void logMessage(const std::string& message);
+std::string getStatus();
+void log(const std::string& message);
 
 #endif // NATIVECALLHOOK_H

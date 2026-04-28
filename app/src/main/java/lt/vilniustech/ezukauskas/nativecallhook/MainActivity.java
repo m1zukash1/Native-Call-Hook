@@ -9,15 +9,25 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import lt.vilniustech.ezukauskas.nativecallhook.NativeCallHook;
-
+/**
+ * Demo activity that exercises the native call hook library.
+ * Initializes the hook, loads a native library that in turn loads
+ * an encrypted library, demonstrating the full interception flow.
+ */
 public class MainActivity extends AppCompatActivity {
 
+    private static final String TAG = "NATIVECALLHOOK";
+
     static {
+        // Initialize the dlopen hook FIRST — before loading any other native libraries.
+        // This ensures all subsequent dlopen calls pass through the hook.
+        NativeCallHook.initialize();
+
+        // Load the demo library; its dlopen("liblibb.so") call will be intercepted.
         System.loadLibrary("liba");
     }
-    
-    public native void testLibraryLoading();
+
+    public native void loadEncryptedLibrary();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,12 +40,10 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-        String message = NativeCallHook.getHelloWorld();
-        Log.d("MainActivity", "Received from library: " + message);
-        
-        NativeCallHook.logMessage("Hello from MainActivity through JNI!");
-        
-        Log.d("MainActivity", "Testing LibA -> LibB loading...");
-        testLibraryLoading();
+        Log.i(TAG, NativeCallHook.getStatus());
+        NativeCallHook.log("MainActivity started");
+
+        // Trigger the liba → liblibb loading chain (liblibb.so is encrypted on disk)
+        loadEncryptedLibrary();
     }
 }

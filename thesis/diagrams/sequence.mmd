@@ -1,0 +1,55 @@
+sequenceDiagram
+    autonumber
+
+    participant MA as MainActivity
+    participant NCH as NativeCallHook
+    participant Linker as ART / Bionic Linker
+    participant Core as libnativecallhook.so
+    participant BH as ByteHook
+    participant LibA as lib_a.so
+    participant LibB as lib_b.so
+
+    Note over MA,LibB: Phase 1 — Hook Installation
+
+    MA->>NCH: initialize()
+    NCH->>Linker: System.loadLibrary("nativecallhook")
+    Linker->>Core: load + run __attribute__((constructor))
+    activate Core
+    Core->>BH: bytehook_init()
+    Core->>BH: bytehook_hook_all("__loader_dlopen", hooked_dlopen)
+    BH-->>Core: stub handle
+    deactivate Core
+    Linker-->>NCH: library loaded
+    NCH-->>MA: true
+
+    MA->>Linker: System.loadLibrary("liba")
+    Linker->>LibA: load (not in registry, normal path)
+
+    Note over MA,LibB: Phase 2 — Intercepted Native-to-Native Loading
+
+    MA->>LibA: testLibraryLoading() [JNI call]
+    activate LibA
+    LibA->>Linker: dlopen("lib_b.so")
+    Linker->>Core: hooked_dlopen("lib_b.so")
+
+    activate Core
+    Note right of Core: Registry lookup → protected
+
+    Core->>Core: Read encrypted file from disk,<br/>XOR decrypt, verify ELF header
+    Core->>Core: memfd_create + write decrypted bytes
+
+    Core->>Linker: android_dlopen_ext(LIBRARY_FD, memfd)
+    Linker->>LibB: map from memfd, init, resolve symbols
+    Linker-->>Core: library handle
+    Core-->>LibA: handle
+    deactivate Core
+
+    LibA->>LibA: dlsym(handle, "call_logcat")
+    LibA->>LibB: call_logcat()
+    LibB-->>LibA: result
+    deactivate LibA
+
+    LibA->>ART: dlclose(handle)
+    deactivate LibA
+
+    LibA-->>MA: testLibraryLoading() returns

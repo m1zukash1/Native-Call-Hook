@@ -8,8 +8,8 @@ android {
 
     defaultConfig {
         applicationId "lt.vilniustech.ezukauskas.nativecallhook"
-        minSdk 24
-        targetSdk 36
+        minSdk 26
+        targetSdk 35  // Maximum supported by bytehook 1.1.1
         versionCode 1
         versionName "1.0"
 
@@ -19,9 +19,19 @@ android {
                 cppFlags ''
             }
         }
+
+        ndk {
+            // Must match nativecallhook module - ARM only (bytehook limitation)
+            abiFilters 'armeabi-v7a', 'arm64-v8a'
+        }
     }
 
     buildTypes {
+        debug {
+            debuggable true
+            jniDebuggable true
+            minifyEnabled false
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
@@ -36,6 +46,14 @@ android {
             path file('src/main/cpp/CMakeLists.txt')
             version '3.22.1'
         }
+    }
+
+    packagingOptions {
+        // Handle duplicate bytehook/shadowhook libraries from nativecallhook module
+        pickFirst 'lib/armeabi-v7a/libbytehook.so'
+        pickFirst 'lib/arm64-v8a/libbytehook.so'
+        pickFirst 'lib/armeabi-v7a/libshadowhook.so'
+        pickFirst 'lib/arm64-v8a/libshadowhook.so'
     }
 }
 
