@@ -1,0 +1,35 @@
+---
+config:
+  theme: base
+  themeVariables:
+    fontSize: 22px
+    primaryColor: '#e8edf2'
+    primaryTextColor: '#1f2937'
+    primaryBorderColor: '#9ca3af'
+    lineColor: '#4b5563'
+  layout: dagre
+---
+flowchart TB
+    Ctor["__attribute__((constructor))\ninit_hook()"]
+
+    subgraph ELF["libnativecallhook.so — ELF segmentai"]
+        text[".text\nfunkcijų kodas"]
+        rodata[".rodata\nkonstantos"]
+        init_array[".init_array\n← konstruktorių rodyklės"]
+        plt[".plt\nimporto lentelė"]
+        got[".got.plt\nadresų lentelė"]
+    end
+
+    Linker["Bionic linkeris\nukrauna biblioteką"]
+
+    Ctor -->|"kompiliatorius\nįrašo į"| init_array
+    Linker -->|"vykdo .init_array\nprieš Java onCreate()"| init_array
+
+    style Ctor fill:#dbeafe,stroke:#6b7280,color:#1f2937
+    style text fill:#f3f4f6,stroke:#9ca3af,color:#6b7280
+    style rodata fill:#f3f4f6,stroke:#9ca3af,color:#6b7280
+    style init_array fill:#fde68a,stroke:#d97706,color:#78350f
+    style plt fill:#f3f4f6,stroke:#9ca3af,color:#6b7280
+    style got fill:#f3f4f6,stroke:#9ca3af,color:#6b7280
+    style Linker fill:#f3f4f6,stroke:#9ca3af,color:#1f2937
+    style ELF fill:#fafaf9,stroke:#d1d5db

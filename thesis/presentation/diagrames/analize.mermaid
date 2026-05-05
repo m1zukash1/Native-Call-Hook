@@ -1,0 +1,31 @@
+---
+config:
+  theme: base
+  themeVariables:
+    fontSize: 28px
+    primaryColor: '#e8edf2'
+    primaryTextColor: '#1f2937'
+    primaryBorderColor: '#9ca3af'
+    lineColor: '#4b5563'
+  layout: dagre
+---
+flowchart TB
+    subgraph JAVA["Java sluoksnis"]
+        SLL["System.loadLibrary()"]
+    end
+    subgraph NATIVE["Vietinių bibliotekų sluoksnis"]
+        DLO["dlopen()"]
+    end
+    subgraph LINKER["Bionic dinaminis linkeris"]
+        Target["__loader_dlopen\n← perėmimo taikinys"]
+    end
+
+    SLL --> Target
+    DLO --> Target
+
+    style SLL fill:#dbeafe,stroke:#6b7280,color:#1f2937
+    style DLO fill:#d1fae5,stroke:#6b7280,color:#1f2937
+    style Target fill:#fde68a,stroke:#d97706,color:#78350f
+    style JAVA fill:#eff6ff,stroke:#bfdbfe
+    style NATIVE fill:#fffbeb,stroke:#fde68a
+    style LINKER fill:#f3f4f6,stroke:#9ca3af

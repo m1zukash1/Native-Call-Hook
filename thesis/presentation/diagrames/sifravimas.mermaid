@@ -1,0 +1,40 @@
+---
+config:
+  theme: base
+  themeVariables:
+    fontSize: 22px
+    primaryColor: '#e8edf2'
+    primaryTextColor: '#1f2937'
+    primaryBorderColor: '#9ca3af'
+    lineColor: '#4b5563'
+  layout: dagre
+---
+flowchart TB
+    subgraph DEV["Kūrėjo mašina"]
+        subgraph TOOLS["Kompiliavimo įrankiai"]
+            Python["Python 3\nencrypt_lib.py"]
+            NDK["Android NDK\n+ CMake"]
+            Gradle["Gradle + AGP"]
+        end
+        subgraph OUTPUT["Kompiliavimo išvestis"]
+            LibA["liba.so\nlibnativecallhook.so\n(teisingas ELF)"]
+            LibB["liblibb.so\n(XOR užšifruota\nnegaliojantis ELF)"]
+        end
+    end
+    APK["APK paketas"]
+
+    NDK -->|"kompiliuoja .cpp → .so"| LibA
+    NDK -->|"kompiliuoja .cpp → .so"| LibB
+    Python -->|"XOR šifruoja vietoje"| LibB
+    Gradle -->|"supakuoja"| APK
+    OUTPUT -->|"įtraukiama į"| Gradle
+
+    style Python fill:#fffbeb,stroke:#d97706,color:#1f2937
+    style NDK fill:#dbeafe,stroke:#6b7280,color:#1f2937
+    style Gradle fill:#dbeafe,stroke:#6b7280,color:#1f2937
+    style LibA fill:#d1fae5,stroke:#6b7280,color:#1f2937
+    style LibB fill:#fde8d8,stroke:#9ca3af,color:#1f2937
+    style APK fill:#d1fae5,stroke:#059669,color:#065f46
+    style TOOLS fill:#eff6ff,stroke:#bfdbfe
+    style OUTPUT fill:#fafaf9,stroke:#d1d5db
+    style DEV fill:#f9fafb,stroke:#9ca3af

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="lt">
+<head>
+<meta charset="UTF-8">
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #ffffff;
+    margin: 0;
+    padding: 0px 0px 0px 0px;
+    color: #1f2937;
+  }
+  h2 {
+    text-align: center;
+    font-size: 22px;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 24px;
+    letter-spacing: 0.01em;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 15px;
+  }
+  thead tr {
+    background: #e8edf2;
+    border-bottom: 2px solid #9ca3af;
+  }
+  thead th {
+    padding: 10px 14px;
+    text-align: left;
+    font-weight: 700;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #374151;
+  }
+  tbody tr {
+    border-bottom: 1px solid #e5e7eb;
+  }
+  tbody td {
+    padding: 12px 14px;
+    vertical-align: top;
+    line-height: 1.5;
+  }
+  .method-name {
+    font-weight: 700;
+    font-size: 15px;
+  }
+  .method-sub {
+    font-weight: 400;
+    font-size: 12px;
+    color: #6b7280;
+    margin-top: 2px;
+  }
+  .badge {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 13px;
+  }
+  .badge-ne  { background: #fee2e2; color: #b91c1c; }
+  .badge-yes { background: #d1fae5; color: #065f46; }
+
+  /* Row accent colors matching mermaid palette */
+  .row-java  { border-left: 4px solid #fca5a5; background: #fff7f7; }
+  .row-inline{ border-left: 4px solid #fde68a; background: #fffdf5; }
+  .row-plt   { border-left: 4px solid #6ee7b7; background: #f5fdf9; }
+
+  .highlight-cell {
+    background: #d1fae5;
+    border-radius: 6px;
+    padding: 8px 10px;
+    color: #065f46;
+    font-size: 13x;
+  }
+</style>
+</head>
+<body>
+<table>
+  <thead>
+    <tr>
+      <th style="width:18%">Metodas</th>
+      <th style="width:15%">Kur veikia</th>
+      <th style="width:13%">Padengia vietinis→vietinis dlopen()?</th>
+      <th style="width:27%">Poveikis / Rizika</th>
+      <th style="width:27%">Kodėl (ne) tinka šiam darbui</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr class="row-java">
+      <td>
+        <div class="method-name">Java hooking</div>
+        <div class="method-sub">Java Reflections,<br>ART/Framework</div>
+      </td>
+      <td>Java/ART sluoksnis</td>
+      <td><span class="badge badge-ne">NE</span></td>
+      <td>Maža techninė rizika, bet ir mažesnis matomumas</td>
+      <td>Nemato vietinių metodų, todėl nepadengia pagrindinės problemos</td>
+    </tr>
+    <tr class="row-inline">
+      <td>
+        <div class="method-name">Inline hooking</div>
+        <div class="method-sub">Instrukcijų<br>perrašymas</div>
+      </td>
+      <td>Vietinis sluoksnis (funkcijų instrukcijų perrašymas)</td>
+      <td><span class="badge badge-yes">TAIP</span></td>
+      <td>Didelė stabilumo ir aptikimo rizika, jautrus įrenginio architektūrai</td>
+      <td>Universalus metodas, tačiau pernelyg modifikuojantis proceso vykdymą ir sudėtingas palaikyti</td>
+    </tr>
+    <tr class="row-plt">
+      <td>
+        <div class="method-name">PLT/GOT hooking</div>
+        <div class="method-sub">Lentelių<br>perrašymas</div>
+      </td>
+      <td>ELF dinaminio susiejimo mechanizmas (PLT/GOT)</td>
+      <td><span class="badge badge-yes">TAIP</span></td>
+      <td>Nekeičia instrukcijų, geresnis stabilumas</td>
+      <td>
+        <div class="highlight-cell">Leidžia perimti dlopen šeimos funkcijas ir vykdyti viso proceso masto funkcijų perėmimą</div>
+      </td>
+    </tr>
+  </tbody>
+</table>
+</body>
+</html>

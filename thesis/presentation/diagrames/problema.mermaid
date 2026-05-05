@@ -1,0 +1,32 @@
+---
+config:
+  theme: base
+  themeVariables:
+    fontSize: 28px
+    primaryColor: '#e8edf2'
+    primaryTextColor: '#1f2937'
+    primaryBorderColor: '#9ca3af'
+    lineColor: '#4b5563'
+  layout: dagre
+---
+flowchart TB
+ subgraph JAVA["Java sluoksnis"]
+        JCode["Java kodas"]
+  end
+ subgraph NATIVE["Vietinių bibliotekų sluoksnis"]
+        LibA["Vietinė biblioteka A"]
+        LibB["Vietinė biblioteka B"]
+  end
+ subgraph APP["Android aplikacia⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀"]
+        JAVA
+        NATIVE
+  end
+    JCode -- "System.loadLibrary()" --> LibA
+    LibA -- dlopen() --> LibB
+
+    style JCode fill:#dbeafe,stroke:#6b7280,color:#1f2937
+    style LibA fill:#d1fae5,stroke:#6b7280,color:#1f2937
+    style LibB fill:#fed7aa,stroke:#9ca3af,color:#1f2937
+    style JAVA fill:#eff6ff,stroke:#bfdbfe
+    style NATIVE fill:#fffbeb,stroke:#fde68a
+    style APP fill:#f9fafb,stroke:#d1d5db

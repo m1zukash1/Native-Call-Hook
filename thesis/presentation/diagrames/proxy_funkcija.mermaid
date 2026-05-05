@@ -1,0 +1,44 @@
+---
+config:
+  theme: base
+  themeVariables:
+    fontSize: 128px
+    primaryColor: '#e8edf2'
+    primaryTextColor: '#1f2937'
+    primaryBorderColor: '#9ca3af'
+    lineColor: '#4b5563'
+  layout: dagre
+---
+flowchart TB
+ subgraph DECRYPT[" "]
+        Read["Nuskaitoma&nbsp;užšifruota&nbsp;biblioteka&nbsp;į&nbsp;atminties&nbsp;bufferį"]
+        Xor["XOR&nbsp;dešifravimas&nbsp;baitas&nbsp;po&nbsp;baito"]
+        ELF{"Teisingas&nbsp;ELF&nbsp;magic?"}
+        Memfd["sukuriamas&nbsp;anoniminis deskriptorius"]
+        Write["Įrašomi&nbsp;dešifruoti&nbsp;baitai&nbsp;į&nbsp;deskriptorių"]
+        Ext["android_dlopen_ext() ANDROID_DLEXT_USE_LIBRARY_FD"]
+  end
+    Entry["Proxy&nbsp;funkcijos inicializacija"] --> Check{"biblioteka&nbsp;užšifruotų&nbsp;sąraše?"}
+    Check == Ne ==> Orig["Perduodama&nbsp;originaliai __loader_dlopen()&nbsp;funkcijai"]
+    Check == Taip ==> Read
+    Orig ==> Handle(["Gražinamas handle"])
+    Read --> Xor
+    Xor --> ELF
+    ELF == Ne ==> Null(["Gražinamas NULL"])
+    ELF == Taip ==> Memfd
+    Memfd --> Write
+    Write --> Ext
+    Ext ==> Handle
+
+    style Read fill:#fffbeb,stroke:#d97706,color:#1f2937
+    style Xor fill:#fde8d8,stroke:#9ca3af,color:#1f2937
+    style ELF fill:#fde8d8,stroke:#d97706,color:#1f2937
+    style Memfd fill:#dbeafe,stroke:#6b7280,color:#1f2937
+    style Write fill:#dbeafe,stroke:#6b7280,color:#1f2937
+    style Ext fill:#d1fae5,stroke:#059669,color:#065f46
+    style Entry fill:#dbeafe,stroke:#6b7280,color:#1f2937
+    style Check fill:#fffbeb,stroke:#d97706,color:#1f2937
+    style Orig fill:#f3f4f6,stroke:#9ca3af,color:#1f2937
+    style Handle fill:#d1fae5,stroke:#059669,color:#065f46
+    style Null fill:#fee2e2,stroke:#b91c1c,color:#b91c1c
+    style DECRYPT fill:#fafaf9,stroke:#d1d5db

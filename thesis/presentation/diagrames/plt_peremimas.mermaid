@@ -1,0 +1,37 @@
+---
+config:
+  theme: base
+  themeVariables:
+    fontSize: 22px
+    primaryColor: '#e8edf2'
+    primaryTextColor: '#1f2937'
+    primaryBorderColor: '#9ca3af'
+    lineColor: '#4b5563'
+  layout: dagre
+---
+flowchart TB
+    subgraph APP["Android aplikacijos paleidimas"]
+        Linker["Bionic dinaminis linkeris\nukrauna bibliotekas"]
+        subgraph NCH["libnativecallhook.so"]
+            InitArray[".init_array\n__attribute__((constructor))"]
+            ByteHook["ByteHook\nbytehook_hook_all()"]
+            PLT["PLT / GOT\nlentelių modifikavimas"]
+        end
+        Java["Java sluoksnis\nonCreate()"]
+    end
+    Proxy["Proxy funkcija\nhooked_dlopen()"]
+
+    Linker -->|"užkrauna"| NCH
+    InitArray -->|"kviečia"| ByteHook
+    ByteHook -->|"modifikuoja"| PLT
+    Linker -->|"po .init_array"| Java
+    PLT -->|"nukreipia __loader_dlopen"| Proxy
+
+    style Linker fill:#f3f4f6,stroke:#9ca3af,color:#1f2937
+    style InitArray fill:#dbeafe,stroke:#6b7280,color:#1f2937
+    style ByteHook fill:#fffbeb,stroke:#d97706,color:#1f2937
+    style PLT fill:#fffbeb,stroke:#d97706,color:#1f2937
+    style Java fill:#f3f4f6,stroke:#9ca3af,color:#6b7280
+    style Proxy fill:#d1fae5,stroke:#059669,color:#065f46
+    style NCH fill:#eff6ff,stroke:#bfdbfe
+    style APP fill:#f9fafb,stroke:#d1d5db
