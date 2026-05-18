@@ -7,6 +7,8 @@ find_package(bytehook REQUIRED CONFIG)
 add_library(${CMAKE_PROJECT_NAME} SHARED
     nativecallhook.cpp
     jni_bridge.cpp
+    test_harness.cpp
+    jni_bridge_test.cpp
 )
 
 target_link_libraries(${CMAKE_PROJECT_NAME}

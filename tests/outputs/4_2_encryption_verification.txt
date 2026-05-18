@@ -1,4 +1,4 @@
-Library directory: /data/app/~~E6ldWSdbeIHCwTluBWHz7Q==/lt.vilniustech.ezukauskas.nativecallhook-PTnDJlSCnaKednD2FnV7RQ==/lib/arm64
+Library directory: /data/app/~~cm7MzZErSTCNIRqDj2kyug==/lt.vilniustech.ezukauskas.nativecallhook-Enwp8iWfHCG3obH8Bn534w==/lib/arm64
 
 --- libliba.so (normal, unprotected) first 16 bytes ---
 00000000: 7f45 4c46 0201 0100 0000 0000 0000 0000  .ELF............

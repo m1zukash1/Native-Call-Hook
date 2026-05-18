@@ -1,0 +1,40 @@
+Test: Fail-safe behaviour for missing, empty, and truncated files
+Methodology: Direct calls to load_decrypted_library with invalid inputs
+Expected: Each call logs an error and returns nullptr, app survives
+
+--- Fail-safe log lines ---
+05-18 01:03:45.193 18951 18951 I NATIVECALLHOOK: FAILSAFE_TEST: --- missing file ---
+05-18 01:03:45.193 18951 18951 I NATIVECALLHOOK: FAILSAFE_TEST: attempting load from: /data/local/tmp/nonexistent_library.so
+05-18 01:03:45.193 18951 18951 E NATIVECALLHOOK: Failed to open encrypted file: /data/local/tmp/nonexistent_library.so
+05-18 01:03:45.194 18951 18951 I NATIVECALLHOOK: FAILSAFE_TEST: result=0x0 (expected null for error case)
+05-18 01:03:45.194 18951 18951 I NATIVECALLHOOK: FAILSAFE_TEST: --- empty file ---
+05-18 01:03:45.194 18951 18951 I NATIVECALLHOOK: FAILSAFE_TEST: attempting load from: /data/user/0/lt.vilniustech.ezukauskas.nativecallhook/cache/empty_test.so
+05-18 01:03:45.194 18951 18951 E NATIVECALLHOOK: Invalid ELF magic after decryption
+05-18 01:03:45.194 18951 18951 I NATIVECALLHOOK: FAILSAFE_TEST: result=0x0 (expected null for error case)
+05-18 01:03:45.194 18951 18951 I NATIVECALLHOOK: FAILSAFE_TEST: --- truncated file (2 bytes) ---
+05-18 01:03:45.194 18951 18951 I NATIVECALLHOOK: FAILSAFE_TEST: attempting load from: /data/user/0/lt.vilniustech.ezukauskas.nativecallhook/cache/truncated_test.so
+05-18 01:03:45.194 18951 18951 E NATIVECALLHOOK: Invalid ELF magic after decryption
+05-18 01:03:45.194 18951 18951 I NATIVECALLHOOK: FAILSAFE_TEST: result=0x0 (expected null for error case)
+05-18 01:03:45.194 18951 18951 I NATIVECALLHOOK: FAILSAFE_TEST: complete
+
+App process alive: yes (PID 18951)
+
+--- Full logcat ---
+--------- beginning of main
+05-18 01:03:45.173 18951 18951 I NATIVECALLHOOK: dlopen hook installed successfully
+05-18 01:03:45.193 18951 18951 I NATIVECALLHOOK: FAILSAFE_TEST: --- missing file ---
+05-18 01:03:45.193 18951 18951 I NATIVECALLHOOK: FAILSAFE_TEST: attempting load from: /data/local/tmp/nonexistent_library.so
+05-18 01:03:45.193 18951 18951 I NATIVECALLHOOK: Loading encrypted library: /data/local/tmp/nonexistent_library.so
+05-18 01:03:45.193 18951 18951 E NATIVECALLHOOK: Failed to open encrypted file: /data/local/tmp/nonexistent_library.so
+05-18 01:03:45.194 18951 18951 I NATIVECALLHOOK: FAILSAFE_TEST: result=0x0 (expected null for error case)
+05-18 01:03:45.194 18951 18951 I NATIVECALLHOOK: FAILSAFE_TEST: --- empty file ---
+05-18 01:03:45.194 18951 18951 I NATIVECALLHOOK: FAILSAFE_TEST: attempting load from: /data/user/0/lt.vilniustech.ezukauskas.nativecallhook/cache/empty_test.so
+05-18 01:03:45.194 18951 18951 I NATIVECALLHOOK: Loading encrypted library: /data/user/0/lt.vilniustech.ezukauskas.nativecallhook/cache/empty_test.so
+05-18 01:03:45.194 18951 18951 E NATIVECALLHOOK: Invalid ELF magic after decryption
+05-18 01:03:45.194 18951 18951 I NATIVECALLHOOK: FAILSAFE_TEST: result=0x0 (expected null for error case)
+05-18 01:03:45.194 18951 18951 I NATIVECALLHOOK: FAILSAFE_TEST: --- truncated file (2 bytes) ---
+05-18 01:03:45.194 18951 18951 I NATIVECALLHOOK: FAILSAFE_TEST: attempting load from: /data/user/0/lt.vilniustech.ezukauskas.nativecallhook/cache/truncated_test.so
+05-18 01:03:45.194 18951 18951 I NATIVECALLHOOK: Loading encrypted library: /data/user/0/lt.vilniustech.ezukauskas.nativecallhook/cache/truncated_test.so
+05-18 01:03:45.194 18951 18951 E NATIVECALLHOOK: Invalid ELF magic after decryption
+05-18 01:03:45.194 18951 18951 I NATIVECALLHOOK: FAILSAFE_TEST: result=0x0 (expected null for error case)
+05-18 01:03:45.194 18951 18951 I NATIVECALLHOOK: FAILSAFE_TEST: complete

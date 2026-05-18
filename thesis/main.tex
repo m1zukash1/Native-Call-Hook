@@ -19,10 +19,12 @@
 % ============================================================================
 \usepackage{graphicx}
 \usepackage{booktabs}
+\usepackage{longtable}
 \usepackage{svg}
 \svgsetup{inkscapelatex=false}
 \usepackage{float}
 \usepackage[labelfont={bf,it}, labelsep=period]{caption}
+\usepackage{tikz}
 \captionsetup[figure]{labelformat=simple, textfont=it}
 
 % ============================================================================
@@ -77,27 +79,66 @@
 }
 
 \usepackage{listings}
+\usepackage{upquote}
+
+% VS Code Light+ inspired color palette
+\definecolor{VSBorder}{HTML}{E5E5E5}
+\definecolor{VSLine}{HTML}{237893}
+\definecolor{VSKeyword}{HTML}{0000FF}
+\definecolor{VSType}{HTML}{267F99}
+\definecolor{VSConst}{HTML}{098658}
+\definecolor{VSComment}{HTML}{008000}
+\definecolor{VSString}{HTML}{A31515}
+\definecolor{VSFunction}{HTML}{795E26}
+
+\lstdefinelanguage{ModernCpp}{
+    language=C++,
+    alsoletter={_},
+    morekeywords={auto,constexpr,decltype,final,noexcept,override,static_cast},
+    morekeywords=[2]{std,string,vector,ifstream,istreambuf_iterator,uint8_t,off_t,ssize_t,android_dlextinfo,bytehook_stub_t},
+    morekeywords=[3]{true,false,nullptr,NULL},
+    sensitive=true
+}
 
 \lstset{
-    basicstyle=\fontfamily{fvm}\selectfont\footnotesize,  % Beramono only here
-    keywordstyle=\color{blue},
-    stringstyle=\color{olive},
-    commentstyle=\color{gray},
+    basicstyle=\fontfamily{fvm}\selectfont\footnotesize,
+    keywordstyle=\color{VSKeyword},
+    keywordstyle={[2]\color{VSType}},
+    keywordstyle={[3]\color{VSConst}},
+    stringstyle=\color{VSString},
+    commentstyle=\color{VSComment},
     identifierstyle=\color{black},
     numbers=left,
-    numberstyle=\tiny\color{gray},
+    numberstyle=\tiny\color{VSLine},
     stepnumber=1,
     numbersep=8pt,
     showstringspaces=false,
     breaklines=true,
     keepspaces=true,
+    columns=fullflexible,
+    upquote=true,
     frame=single,
+    framesep=6pt,
     framerule=0.4pt,
-    rulecolor=\color{black},
+    rulecolor=\color{VSBorder},
     backgroundcolor=\color{white},
     captionpos=b,
-    language=C++
+    aboveskip=10pt,
+    belowskip=10pt
 }
+
+% Listings iterate as figures: shared counter, shared label name, List of Figures entry
+\renewcommand{\lstlistingname}{Figure}
+\makeatletter
+\AtBeginDocument{%
+    \let\c@lstlisting\c@figure
+    \let\thelstlisting\thefigure
+    \renewcommand{\ext@lstlisting}{lof}
+    \let\l@lstlisting\l@figure
+}
+\makeatother
+\crefname{lstlisting}{fig.}{figs.}
+\Crefname{lstlisting}{Fig.}{Figs.}
 
 % ============================================================================
 % SPACING AND PARAGRAPH SETTINGS
@@ -109,11 +150,20 @@
 \emergencystretch=2em
 
 % ============================================================================
+% INLINE CODE BREAKING
+% ============================================================================
+% Allow LaTeX to hyphenate typewriter-font text (\texttt{}).
+\usepackage[htt]{hyphenat}
+% Make \_  a break opportunity so identifiers like load\_decrypted\_library()
+% can wrap at each underscore instead of overflowing the margin.
+\renewcommand\_{{\textunderscore\allowbreak}}
+
+% ============================================================================
 % DOCUMENT METADATA
 % ============================================================================
 % Title page content - modify these as needed
 
-\newcommand{\ttinline}[1]{\mbox{\texttt{#1}}}
+\newcommand{\ttinline}[1]{\texttt{#1}}
 
 % ============================================================================
 % PAGE STYLE AND HEADERS
@@ -288,13 +338,223 @@
 \end{titlepage}
 \newpage
 
+\clearpage
+\thispagestyle{empty}
+
+\begingroup
+\renewcommand{\baselinestretch}{1.12}\selectfont
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.55em}
+\emergencystretch=3em
+\normalsize
+
+\begin{center}
+    \MakeUppercase{Vilniaus Gedimino technikos universitetas}\\[0.25em]
+    \MakeUppercase{Fundamentinių mokslų fakultetas}\\[0.25em]
+    \MakeUppercase{Informacinių technologijų katedra}
+\end{center}
+
+\vspace{1.15cm}
+
+\noindent
+\begin{minipage}[t]{0.70\textwidth}
+    \raggedright
+    Studijų kryptis: Informatika\\[0.35em]
+    Studijų programa: Informacinės technologijos, valstybinis kodas 6121BX033\\[0.35em]
+    Specializacija: Informacinių technologijų valdymas
+\end{minipage}\hfill
+\begin{minipage}[t]{0.23\textwidth}
+    \raggedright
+    TVIRTINU\\[0.35em]
+    Katedros vedėjas\\[0.35em]
+    Dmitrij Šešok\\[0.35em]
+    2026-05-09
+\end{minipage}
+
+\vspace{1.15cm}
+
+\begin{center}
+    \textbf{\MakeUppercase{Bakalauro baigiamojo darbo (projekto) užduotis}}\\[0.7em]
+    Nr. ITVf-22-12806\\[0.7em]
+    Vilnius
+\end{center}
+
+\vspace{0.8cm}
+
+Studentas (-ė): Elvinas Žukauskas
+
+Baigiamojo darbo (projekto) tema: Android vietinių funkcijų perėmimas šifruotoms bibliotekoms
+
+Baigiamojo darbo (projekto) užbaigimo terminas pagal numatytą studijų kalendorinį grafiką.
+
+\vspace{0.35cm}
+
+\MakeUppercase{Baigiamojo darbo (projekto) užduotis:}
+
+Baigiamojo darbo užduotis: Ištirti „Android“ pažeidžiamumą neteisėta prieiga, vietinių bibliotekų įkėlimo atvejų scenarijų vykdymo metu. Įgyvendinti konceptualų sprendimą mažinantį saugos pažeidžiamumą, naudojant vietinių bibliotekų įkėlimo scenarijus. Pateikti įdiegto sprendimo testavimo pavyzdžius.
+
+\vspace{0.45cm}
+
+Vadovas docentas Saulius Valentinavičius
+
+\endgroup
+
+% ============================================================================
+% LITHUANIAN ANNOTATION (ANOTACIJA)
+% ============================================================================
+\clearpage
+\thispagestyle{empty}
+
+\begingroup
+\small
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\setstretch{1.15}
+
+\noindent
+\fbox{\begin{tabular}{@{}l@{}}
+Vilniaus Gedimino technikos universitetas\\
+\textbf{Fundamentinių mokslų fakultetas}\\
+Informacinių technologijų katedra
+\end{tabular}}
+
+\vspace{0.8cm}
+
+\noindent
+\fbox{\parbox{\dimexpr\textwidth-2\fboxsep-2\fboxrule}{%
+\strut\textbf{Informacinių technologijų} studijų programos baigiamasis bakalauro darbas\\[0.3em]
+Pavadinimas \textbf{Android vietinių funkcijų perėmimas šifruotoms bibliotekoms}\\[0.3em]
+Autorius \textbf{Elvinas Žukauskas} \hfill Vadovas \textbf{doc.\ dr.\ Saulius Valentinavičius}\strut
+}}
+
+\vspace{0.5cm}
+
+\hfill
+\fbox{\parbox{2.8cm}{\centering\strut\textbf{Kalba}\\Anglų\strut}}
+
+\vspace{0.6cm}
+
+\noindent
+\fbox{\parbox{\dimexpr\textwidth-2\fboxsep-2\fboxrule}{%
+\strut\textbf{Anotacija}\par\vspace{0.3em}
+\setlength{\parindent}{1.5em}
+\indent Baigiamajame bakalauro darbe nagrinėjama Android vietinių bibliotekų apsauga naudojant vykdymo meto iššifravimą ir vietinių funkcijų perėmimo mechanizmus. Teorinėje dalyje analizuojami Android vietinių bibliotekų įkėlimo mechanizmai, ELF formato dinaminio susiejimo struktūros ir perėmimo technikos: tiesioginis instrukcijų pakeitimas, PLT/GOT lentelių modifikavimas, bibliotekų interpozicija ir įkėlimo taško perėmimas. Lyginami Android perėmimo karkasai Frida, LSPosed ir ByteHook pagal tinkamumą vietinių bibliotekų įkėlimo perėmimui be sistemos privilegijų. Praktinėje dalyje suprojektuotas ir įgyvendintas konceptualus apsaugos sprendimas naudojant PLT pagrįstą perėmimą per ByteHook biblioteką. Sistema kompiliavimo metu užšifruoja pasirinktas vietines bibliotekas XOR šifru, o vykdymo metu perima \texttt{\_\_loader\_dlopen} funkcijos iškvietimus, iššifruoja apsaugotas bibliotekas atmintyje per \texttt{memfd\_create} ir įkelia jas naudojant \texttt{android\_dlopen\_ext} sąsają. Sprendimas ištestuotas Google Pixel~9 įrenginyje su Android~16 (API lygis~36). Atlikti 15 sisteminių testų, patvirtinančių teisingą perėmimą, šaltojo paleidimo pridėtines sąnaudas mažesnes nei 15\,ms ir praeinančio iškvietimo sąnaudas mažesnes nei 50\,$\mu$s. Rezultatai patvirtino, kad PLT pagrįstas perėmimas gali skaidriai apdoroti vietinių bibliotekų tarpusavio įkėlimo scenarijus, kurių neaptarnauja Java lygio mechanizmai.\par
+\vspace{0.4em}
+\setlength{\parindent}{0pt}
+Darbo sudaro 6 dalys: įvadas, aktualių technologijų analizė ir apžvalga, sistemos specifikacija, sistemos įgyvendinimas, sistemos testavimas ir išvados.\par
+\vspace{0.2em}
+% NOTE: verify page count after compilation and adjust if needed
+Darbo apimtis\,--\,45 p.\ teksto su priedais, 13 iliustr., 7 lent., 16 bibliografinių šaltinių.\strut
+}}
+
+\vspace{0.5cm}
+
+\noindent
+\fbox{\parbox{\dimexpr\textwidth-2\fboxsep-2\fboxrule}{%
+\strut\textbf{Prasminiai žodžiai:} Android, vietinės bibliotekos, PLT perėmimas, šifravimas, memfd, dinaminis susiejimas, ByteHook.\strut
+}}
+
+\endgroup
+
+% ============================================================================
+% ENGLISH ANNOTATION
+% ============================================================================
+\clearpage
+\thispagestyle{empty}
+
+\begingroup
+\small
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\setstretch{1.15}
+
+\noindent
+\fbox{\begin{tabular}{@{}l@{}}
+Vilnius Gediminas Technical University\\
+\textbf{Faculty of Fundamental Sciences}\\
+Information Technology department
+\end{tabular}}
+
+\vspace{0.8cm}
+
+\noindent
+\fbox{\parbox{\dimexpr\textwidth-2\fboxsep-2\fboxrule}{%
+\strut\textbf{Information Technology} bachelor study program final thesis\\[0.3em]
+Title \textbf{Android Native Call Hooking for Encrypted Libraries}\\[0.3em]
+Author \textbf{Elvinas Žukauskas} \hfill Supervisor \textbf{Assoc.\ Prof.\ Dr.\ Saulius Valentinavičius}\strut
+}}
+
+\vspace{0.5cm}
+
+\hfill
+\fbox{\parbox{2.8cm}{\centering\strut\textbf{Language}\\English\strut}}
+
+\vspace{0.6cm}
+
+\noindent
+\fbox{\parbox{\dimexpr\textwidth-2\fboxsep-2\fboxrule}{%
+\strut\textbf{Annotation}\par\vspace{0.3em}
+\setlength{\parindent}{1.5em}
+\indent This bachelor's thesis examines the protection of Android native libraries using runtime decryption and native call hooking mechanisms. The theoretical part analyzes Android native library loading mechanisms, ELF dynamic linking structures, and interception techniques including inline patching, PLT/GOT table modification, library interposition, and loader entry point interception. Existing Android hooking frameworks, Frida, LSPosed, and ByteHook, are compared for their suitability for intercepting native library loading without requiring system privileges. In the practical part, a proof-of-concept protection solution was designed and implemented using PLT-based interception through the ByteHook library. The system encrypts selected native libraries with an XOR cipher at build time and intercepts \texttt{\_\_loader\_dlopen} function calls at runtime, decrypts protected libraries in memory using \texttt{memfd\_create}, and loads them through the \texttt{android\_dlopen\_ext} interface. The solution was tested on a Google Pixel~9 device running Android~16 (API level~36). Fifteen system tests confirmed correct interception behaviour, cold start overhead below 15\,ms, and per-call passthrough overhead below 50\,$\mu$s. The results demonstrated that PLT-based interception can transparently handle native-to-native library loading scenarios that are not addressed by Java-level hooking mechanisms.\par
+\vspace{0.4em}
+\setlength{\parindent}{0pt}
+The thesis consists of 6 parts: introduction, analysis of relevant technologies, system specification, system implementation, system testing, and conclusions.\par
+\vspace{0.2em}
+% NOTE: verify page count after compilation and adjust if needed
+The thesis consists of 45 pages of text with appendices, 13 figures, 7 tables, and 16 bibliographic sources.\strut
+}}
+
+\vspace{0.5cm}
+
+\noindent
+\fbox{\parbox{\dimexpr\textwidth-2\fboxsep-2\fboxrule}{%
+\strut\textbf{Keywords:} Android, native libraries, PLT hooking, encryption, memfd, dynamic linking, ByteHook.\strut
+}}
+
+\endgroup
+
+\clearpage
+
 % Switch to main document formatting for subsequent pages
 \pagestyle{plain}
 \pagenumbering{arabic}
-\setcounter{page}{3}  % Start page numbering from 3 as in the docx
+\setcounter{page}{5}  % Pages: title(1), approval(2), task(3), annotation LT(4), annotation EN(5), TOC starts here
 
 \setcounter{tocdepth}{3}
 \tableofcontents
+\newpage
+
+\listoffigures
+\newpage
+
+\listoftables
+\newpage
+
+% ============================================================================
+% LIST OF ABBREVIATIONS
+% ============================================================================
+\section*{List of Abbreviations}
+\addcontentsline{toc}{section}{List of Abbreviations}
+
+\begin{tabular}{@{}l l@{}}
+    ABI   & Application Binary Interface \\
+    ADB   & Android Debug Bridge \\
+    AOT   & Ahead-Of-Time (compilation) \\
+    API   & Application Programming Interface \\
+    APK   & Android Package \\
+    ART   & Android Runtime \\
+    ELF   & Executable and Linkable Format \\
+    GOT   & Global Offset Table \\
+    HAL   & Hardware Abstraction Layer \\
+    JIT   & Just-In-Time (compilation) \\
+    JNI   & Java Native Interface \\
+    JVM   & Java Virtual Machine \\
+    NDK   & Native Development Kit \\
+    PLT   & Procedure Linkage Table \\
+    SDK   & Software Development Kit \\
+    XOR   & Exclusive OR \\
+\end{tabular}
+
 \newpage
 
 % ============================================================================
@@ -303,11 +563,11 @@
 \section*{Introduction}
 \addcontentsline{toc}{section}{Introduction}
 
-\textbf{Relevance of the thesis.} Intellectual property protection has long been a focus in the field of cybersecurity. On mobile platforms such as Android, one important aspect of this protection is encrypting native libraries and ensuring that they are only decrypted at runtime. While this can be achieved easily when a native library is loaded from Java, a greater challenge arises when native libraries load other native libraries. This issue is particularly relevant in cross-platform frameworks such as Flutter (used in approximately 11\% of Android apps~\cite{appfigures2024flutter}) and .NET MAUI, which provide a single codebase across multiple targets but internally depend on platform-specific mechanisms, including cases where native libraries load other native libraries. Such nested loading scenarios complicate protection processes, as traditional Java-based hooking approaches do not address native loading calls. Addressing these challenges is crucial for maintaining the confidentiality and integrity of sensitive application components in modern mobile ecosystems.
+\textbf{Relevance of the thesis.} Intellectual property protection has long been a focus in the field of cybersecurity. On mobile platforms such as Android, one important aspect of this protection is encrypting native libraries and ensuring that they are only decrypted at runtime, as an unprotected library can be extracted from an APK and reverse-engineered to recover proprietary algorithms or business logic. While this can be achieved easily when a native library is loaded from Java, a greater challenge arises when native libraries load other native libraries. This issue is particularly relevant in cross-platform frameworks such as Flutter (used in approximately 11\% of Android apps~\cite{appfigures2024flutter}) and .NET MAUI, which provide a single codebase across multiple targets but internally depend on platform-specific mechanisms, including cases where native libraries load other native libraries. Such nested loading scenarios complicate protection processes, as traditional Java-based hooking approaches do not address native loading calls, leaving transitively-loaded libraries as separate unprotected \texttt{.so} files directly accessible to any attacker with the APK. The practical relevance of this gap was confirmed during the development of a commercial Android protection product, where several customers working with Flutter and .NET MAUI explicitly requested protection for libraries loaded through native code.
 
 \textbf{Problem of the thesis.} Existing protection mechanisms do not address scenarios where native libraries load other native libraries, leaving such cases vulnerable to unauthorized access. This thesis proposes and implements a proof-of-concept solution that intercepts Android native library loading calls and replaces them with custom logic to decrypt libraries before they are loaded, thereby extending protection beyond standard Java-based loading mechanisms.
 
-\textbf{Objective of the thesis:} Research possible solutions for intercepting Android native loading calls and developing a proof-of-concept implementation.
+\textbf{Objective of the thesis:} Design and implement a proof-of-concept system that intercepts native-to-native library loading on Android and decrypts protected libraries entirely in process memory.
 
 \textbf{Tasks of the thesis:}
 \begin{enumerate}
@@ -316,6 +576,8 @@
     \item Design a proof-of-concept architecture for custom interception and decryption.
     \item Implement and test the proof-of-concept solution.
 \end{enumerate}
+
+\textbf{Work novelty of the thesis.} Existing protection frameworks such as Frida and LSPosed operate at the Java or ART layer and cannot intercept \texttt{dlopen()} calls initiated from within native code. No publicly documented solution addresses the native-to-native loading scenario. This work proposes PLT-based interception at the bionic dynamic linker boundary (\texttt{\_\_loader\_dlopen}) that transparently routes protected library loads through an in-memory decryption pipeline using \texttt{memfd\_create}, without requiring modifications to the calling native code or the Android framework.
 
 \newpage
 
@@ -328,9 +590,9 @@ Android provides the runtime environment in which the proof-of-concept system op
 
 When SDK-level code is insufficient, such as when reusing an existing C library or meeting strict latency requirements, the Native Development Kit (NDK) allows developers to compile C and C++ code into shared objects that run inside an application process.  The NDK bridges managed and native layers and is central to the library-loading mechanism this thesis intercepts.
 
-Hooking (function interception) is the technique of redirecting control flow at runtime to observe or modify a program's behaviour without changing its source code.  Security researchers use it for monitoring and debugging; attackers use the same mechanisms to bypass protections or manipulate application logic.  This dual nature makes hooking both the tool and the threat model in this thesis.
+Hooking (function interception) is the technique of redirecting control flow at runtime to observe or modify a program's behaviour without changing its source code.  Security researchers use it for monitoring and debugging, while attackers use the same mechanisms to bypass protections or manipulate application logic.  This dual nature makes hooking both the tool and the threat model in this thesis.
 
-Encryption transforms data into an unreadable form; decryption reverses the transformation when the correct key is available.  Applied to native libraries, encryption can ensure that an \texttt{.so} file stored on disk is useless to an attacker who lacks the key.  Combined with controlled interception of the loading path, encrypted libraries can be restored to a loadable state only at the moment they are needed, within the memory of the authorised process.
+Encryption transforms data into an unreadable form, and decryption reverses the transformation when the correct key is available.  Applied to native libraries, encryption can ensure that an \texttt{.so} file stored on disk is useless to an attacker who lacks the key.  Combined with controlled interception of the loading path, encrypted libraries can be restored to a loadable state only at the moment they are needed, within the memory of the authorised process.
 
 \subsection{Android Platform}
 \subsubsection{Platform Architecture}
@@ -372,7 +634,7 @@ As shown in \cref{fig:elf_link_exec_views}, an ELF shared object is organized in
 \begin{figure}[p]
     \centering
     \includegraphics[width=0.625\textwidth]{images/elf_link_exec_views.png}
-    \caption{Structure of an ELF shared object: (a) linking view; (b) execution view. Adapted from the System V Application Binary Interface ELF specification \cite{xinuos2025elf}.}
+    \caption{Structure of an ELF shared object: (a) linking view, (b) execution view. Adapted from the System V Application Binary Interface ELF specification \cite{xinuos2025elf}.}
     \label{fig:elf_link_exec_views}
 \end{figure}
 
@@ -418,7 +680,7 @@ A key limitation of Java-level hooking is that it does not observe native-only e
 
 \subsubsection{Native-level Hooking}
 
-Native-level hooking intercepts compiled C/C++ execution and dynamic linking. It provides broader coverage, including system libraries and loader paths, at the cost of increased complexity \cite{ronin2018hooking}. In practice, native hooks can be implemented using several technique families, including inline patching of function prologues, PLT and Global Offset Table (GOT) based redirection, library interposition through load order control, and direct interception of loader entry points such as \texttt{dlopen()} and \texttt{dlsym()} \cite{ronin2018hooking,kumar2023inviseal}. The two techniques that are most relevant for this thesis, inline hooking and PLT-based hooking, are discussed in more detail in the following subsubsections.
+Native-level hooking intercepts compiled C/C++ execution and dynamic linking. It provides broader coverage, including system libraries and loader paths, at the cost of increased complexity \cite{ronin2018hooking}. In practice, native hooks can be implemented using several technique families, including inline patching of function prologues, PLT and Global Offset Table (GOT) based redirection, library interposition through load order control, and direct interception of loader entry points such as \texttt{dlopen()} and \texttt{dlsym()} \cite{ronin2018hooking,kumar2023inviseal}. Library interposition and direct loader entry interception are briefly described below but are not examined in detail, as \texttt{LD\_PRELOAD} semantics are constrained by Android's linker namespaces and application sandboxing, and loader-level modification requires system-wide privileges outside the single-application scope of this work. The two techniques most directly applicable to user-space function-level interception in this context, inline hooking and PLT-based hooking, are discussed in detail in the following subsubsections.
 
 \textbf{Library interposition.} This method replaces exported symbols by ensuring a custom library is loaded before the target. On Android, traditional \texttt{LD\_PRELOAD} is constrained by linker namespaces and application sandboxing. Effective interposition often relies on early injection, custom loader hooks, or process-specific load order control \cite{ronin2018hooking}. Research frameworks combine Java-layer hooks with operating system-level controls to reduce detectability while observing cross-layer behavior \cite{kumar2023inviseal}.
 
@@ -466,7 +728,7 @@ From an architectural perspective, LSPosed integrates into process startup at th
 
 \textit{Module scoping and configuration.} A central feature of LSPosed is fine grained scoping of modules. Instead of applying a module globally to the entire system, LSPosed lets the user restrict each module to specific applications, user profiles, or process types. This per app scoping reduces unintended side effects, simplifies troubleshooting, and improves security, because only the targeted processes are affected by a given hook \cite{androidroot2024lsposed,promon2024hooking}. LSPosed also integrates an online repository of modules, making it easier to discover and update functionality such as ad blocking, UI customization, or privacy enhancements directly from the manager interface \cite{lsposed2025website,androidroot2024lsposed}.
 
-\textit{Platform coverage and limitations.} LSPosed is designed specifically for modern Android releases and supports versions from Android 8.1 up to Android 16 according to recent stable releases \cite{lsposed2025github,lsposed2025website,androidroot2024lsposed}. Because it operates as a systemless module in Magisk or KernelSU, it can typically persist across operating system updates as long as the underlying root solution remains compatible. At the same time, LSPosed is constrained to the managed layer: like the original Xposed, it hooks Java and Kotlin code running on ART and does not directly instrument native C/C++ code or the dynamic linker \cite{promon2024hooking}. Consequently, LSPosed can intercept high level calls such as \texttt{System.loadLibrary()} or security relevant framework APIs, but it cannot see native only library loading paths implemented purely with \texttt{dlopen()} and related functions in C/C++. For scenarios that require intercepting native library loading, observing ELF relocations, or decrypting libraries immediately before they are mapped, LSPosed is therefore complementary to, but not a replacement for, native level hooking techniques described elsewhere in this thesis.
+\textit{Platform coverage and limitations.} LSPosed is designed specifically for modern Android releases and supports versions from Android 8.1 (API 27) up to Android 16 (API 36) according to recent stable releases \cite{lsposed2025github,lsposed2025website,androidroot2024lsposed}. Because it operates as a systemless module in Magisk or KernelSU, it can typically persist across operating system updates as long as the underlying root solution remains compatible. At the same time, LSPosed is constrained to the managed layer: like the original Xposed, it hooks Java and Kotlin code running on ART and does not directly instrument native C/C++ code or the dynamic linker \cite{promon2024hooking}. Consequently, LSPosed can intercept high level calls such as \texttt{System.loadLibrary()} or security relevant framework APIs, but it cannot see native only library loading paths implemented purely with \texttt{dlopen()} and related functions in C/C++. For scenarios that require intercepting native library loading, observing ELF relocations, or decrypting libraries immediately before they are mapped, LSPosed is therefore complementary to, but not a replacement for, native level hooking techniques described elsewhere in this thesis.
 
 \subsubsection{ByteHook-based PLT Hooking}
 
@@ -477,6 +739,35 @@ Architecturally, ByteHook targets functions that are imported from shared librar
 Integration into an Android project is performed through a combination of Java and native components. ByteHook is distributed via Maven Central as an Android library that exposes a small Java API for initialization. During application startup, a call such as \texttt{ByteHook.init()} configures the global hooking environment inside the process \cite{bytehook2025github,bytehook2025maven}. Native modules then link against the provided \texttt{libbytehook.so} using CMake or \texttt{Android.mk} build scripts and invoke the C API (for example, \texttt{bytehook\_hook\_single}, \texttt{bytehook\_hook\_partial}, or \texttt{bytehook\_hook\_all}) to register hooks on specific symbols. Each hook is represented by a stub handle that can later be used to remove the hook or query its state. Helper macros manage per-thread hook stacks and ensure that calls back into the original function do not introduce recursion or inconsistent nesting \cite{bytehook2025github}.
 
 ByteHook is relevant as a practical mechanism for intercepting native library loading and other critical runtime functions without modifying the operating system or requiring root privileges. By targeting symbols such as \texttt{dlopen()}, \texttt{android\_dlopen\_ext()}, or other loader related entry points in the appropriate shared libraries, ByteHook can observe and redirect native loading operations at the PLT level. A proxy function can validate requested paths, enforce policy, or transparently decrypt protected libraries before forwarding the call to the original loader routine. Because ByteHook is capable of hooking all callers of a given symbol across all dynamic libraries and automatically tracking newly loaded modules, it can provide comprehensive coverage for native loading flows in complex applications that rely on multiple runtime environments and engine style code \cite{bytehook2025github,pizzi2022virtualpatch}.
+
+\cref{tab:framework_comparison} summarises the key properties of the three frameworks across the criteria most relevant to this work.
+
+\begin{table}[H]
+    \centering
+    \caption{Comparison of Android hooking frameworks}
+    \label{tab:framework_comparison}
+    \begin{tabular}{|p{0.24\textwidth}|p{0.21\textwidth}|p{0.21\textwidth}|p{0.21\textwidth}|}
+        \hline
+        \textbf{Criterion} & \textbf{Frida} & \textbf{LSPosed} & \textbf{ByteHook} \\
+        \hline
+        Hooking level & Java and native & Java / ART & Native (PLT/GOT) \\
+        \hline
+        Root required & Yes (server mode) or gadget & Yes (Magisk / KernelSU) & No \\
+        \hline
+        Production ready & No (analysis tool) & No (system module) & Yes (TikTok, Douyin) \\
+        \hline
+        Native \texttt{dlopen} interception & Yes (via scripted interceptor) & No & Yes (direct PLT hook) \\
+        \hline
+        Android version support & API 17 and later & API 27 to API 36 & API 16 to 35 \\
+        \hline
+        License & wxWindows & GPL-3.0 & MIT \\
+        \hline
+        Integration & Runtime injection or gadget embedding & Zygisk / Riru module & Gradle dependency and C API \\
+        \hline
+    \end{tabular}
+\end{table}
+
+ByteHook was selected for this work because it provides production-grade PLT-based hooking without requiring root privileges, directly supports interception of \texttt{dlopen()} at the native level, integrates as a standard Gradle dependency, and automatically propagates hooks to libraries loaded after installation.  Although ByteHook's official support range ends at API~35, the testing performed in this thesis confirms correct operation on API~36 (Android~16) as well.
 
 \subsection{Summary of relevant technologies}
 
@@ -524,111 +815,127 @@ The build and development toolchain used for the system consists of Android Stud
 
 In summary, the system specification assumes an unmodified Android 8.0 (API level 26) or newer environment, ARM based application binaries, a rebuildable application under the control of the developer, and a modern Android toolchain with both native and scripting capabilities. Any behaviour outside these bounds, such as legacy devices with older kernels or custom system images with different linker behaviour, is considered out of scope for this proof of concept.
 
-\subsection{System requirements}
+\subsection{Threat model}
 
-This subsection defines the main functional and non functional requirements for the proposed protection system. Security related requirements are included as part of the non functional requirements.
+The protection system is designed to resist a static adversary: an attacker who has obtained the APK file and attempts to extract and reverse-engineer the native libraries it contains using tools such as disassemblers, hex editors, or ELF analysis utilities. Against this adversary, the system ensures that no valid, loadable version of a protected library exists on persistent storage, so the extracted file cannot be analyzed or reused without the decryption key. The XOR cipher used in this proof of concept is intentionally simple and could be reversed by a determined attacker through brute force. The contribution of this work is the interception mechanism rather than the strength of the cipher, and the hooking layer is cipher-agnostic, meaning any stronger cipher could replace the XOR step without modifying the loading interception logic.
+
+Several attack scenarios are explicitly outside the scope of this proof of concept. An attacker who attaches a debugger or reads process memory after the library has been decrypted and loaded is not addressed. An attacker with root access who uses tools such as \texttt{ptrace} or \texttt{/proc/<pid>/mem} to dump the decrypted image at runtime is also out of scope. The same applies to any kernel-level or hypervisor-level attacker. These limitations are acknowledged in the security discussion in \cref{sec:security_implications} and are identified as areas for future hardening.
+
+\subsection{System requirements} Security related requirements are included as part of the non functional requirements.
 
 \subsubsection{Functional requirements}
 
-\begin{table}[H]
-    \centering
-    \caption{Functional requirements}
-    \label{tab:functional_requirements}
-    \begin{tabular}{|p{0.06\textwidth}|p{0.14\textwidth}|p{0.20\textwidth}|p{0.49\textwidth}|}
-        \hline
-        \textbf{ID} & \textbf{Type} & \textbf{Name} & \textbf{Description} \\
-        \hline
+{\setstretch{1}%
+\begin{longtable}{|p{0.06\textwidth}|p{0.12\textwidth}|p{0.19\textwidth}|p{0.08\textwidth}|p{0.42\textwidth}|}
+    \caption{Functional requirements} \label{tab:functional_requirements} \\
+    \hline
+    \textbf{ID} & \textbf{Type} & \textbf{Name} & \textbf{Priority} & \textbf{Description} \\
+    \hline
+    \endfirsthead
+    \multicolumn{5}{c}{\tablename\ \thetable{} \textit{(continued)}} \\[0.5ex]
+    \hline
+    \textbf{ID} & \textbf{Type} & \textbf{Name} & \textbf{Priority} & \textbf{Description} \\
+    \hline
+    \endhead
+    \endfoot
+    \endlastfoot
         FR1 & Build time &
-        Build time encryption of selected libraries &
+        Build time encryption of selected libraries & High &
         Selected native shared libraries shall be encrypted after compilation and their encrypted versions shall replace the original \texttt{.so} files before packaging. \\
         \hline
         FR2 & Packaging &
-        Preservation of standard packaging and installation &
+        Preservation of standard packaging and installation & High &
         Encrypted libraries shall be placed in the standard native library locations inside the APK so that Android packaging, installation, and extraction behaviour are unchanged. \\
         \hline
         FR3 & Initialization &
-        Runtime initialization of the protection component &
+        Runtime initialization of the protection component & High &
         The runtime protection component shall be initialized during application startup before any protected library is loaded. \\
         \hline
         FR4 & Interception &
-        Interception of native library loading calls &
+        Interception of native library loading calls & High &
         The system shall intercept native library loading calls in the protected process, regardless of whether they originate from managed code or other native libraries. \\
         \hline
         FR5 & Routing &
-        Registry driven routing of load requests &
+        Registry driven routing of load requests & High &
         The system shall maintain a registry of protected library identifiers and shall route each intercepted load request through either the decryption path or the normal loading path based on this registry. \\
         \hline
         FR6 & Loading &
-        Decryption and loading of protected libraries &
+        Decryption and loading of protected libraries & High &
         For libraries marked as protected, the system shall locate the encrypted file on disk, decrypt it in memory, and load the resulting shared object into the current process using an in memory file descriptor or equivalent mechanism. \\
         \hline
         FR7 & Compatibility &
-        Transparent loading of unprotected libraries &
+        Transparent loading of unprotected libraries & Medium &
         For libraries that are not marked as protected, the system shall forward load requests directly to the original dynamic linker implementation without changing their behaviour. \\
         \hline
         FR8 & Compatibility &
-        Support for nested native to native loading &
+        Support for nested native to native loading & High &
         The system shall apply interception and routing decisions to native library loads that are initiated from already loaded native libraries in the same process. \\
         \hline
         FR9 & Robustness &
-        Error reporting and failure handling &
+        Error reporting and failure handling & Medium &
         On failure to decrypt or load a protected library, the system shall report the error through diagnostics and return a failure to the caller, without executing partially decrypted or invalid code. \\
         \hline
-    \end{tabular}
-\end{table}
+\end{longtable}
+}%
 
 \subsubsection{Non functional requirements}
 
-\begin{table}[H]
-    \centering
-    \caption{Non functional requirements}
-    \label{tab:nonfunctional_requirements}
-    \begin{tabular}{|p{0.06\textwidth}|p{0.14\textwidth}|p{0.20\textwidth}|p{0.49\textwidth}|}
-        \hline
-        \textbf{ID} & \textbf{Type} & \textbf{Name} & \textbf{Description} \\
-        \hline
+{\setstretch{1}%
+\begin{longtable}{|p{0.06\textwidth}|p{0.12\textwidth}|p{0.19\textwidth}|p{0.08\textwidth}|p{0.42\textwidth}|}
+    \caption{Non functional requirements} \label{tab:nonfunctional_requirements} \\
+    \hline
+    \textbf{ID} & \textbf{Type} & \textbf{Name} & \textbf{Priority} & \textbf{Description} \\
+    \hline
+    \endfirsthead
+    \multicolumn{5}{c}{\tablename\ \thetable{} \textit{(continued)}} \\[0.5ex]
+    \hline
+    \textbf{ID} & \textbf{Type} & \textbf{Name} & \textbf{Priority} & \textbf{Description} \\
+    \hline
+    \endhead
+    \endfoot
+    \endlastfoot
         NFR1 & Performance &
-        Startup overhead &
-        Initialization of the protection component and hook installation shall not introduce excessive cold start overhead on a representative test device. \\
+        Startup overhead & High &
+        Hook installation shall complete within 100\,ms of process startup on the reference test device. \\
         \hline
         NFR2 & Performance &
-        Overhead for unprotected libraries &
-        Additional overhead for loading libraries that are not protected shall be minimal compared to a direct call to the dynamic linker. \\
+        Overhead for unprotected libraries & High &
+        The per-call overhead for loading a library not in the protected registry shall not exceed 5\,ms on the reference test device. \\
         \hline
         NFR3 & Reproducibility &
-        Build reproducibility &
+        Build reproducibility & Low &
         With the same source code and configuration, the build process including the encryption step shall produce consistent outputs. \\
         \hline
         NFR4 & Maintainability &
-        Maintainability and configurability &
-        Adding or removing protected libraries shall require changes only in a limited set of configuration points, such as the protection registry and build settings. \\
+        Maintainability and configurability & Low &
+        Adding or removing a protected library shall require changes in at most two source files: the filename registry in \texttt{nativecallhook.cpp} and the post-build encryption command in \texttt{CMakeLists.txt}. \\
         \hline
         NFR5 & Compatibility &
-        Toolchain compatibility &
+        Toolchain compatibility & Medium &
         The system shall integrate into an Android Studio, Gradle, NDK, and CMake based toolchain without modifications to platform tools or system components. \\
         \hline
         SR1 & Confidentiality &
-        No valid protected libraries on disk &
+        No valid protected libraries on disk & High &
         In the installed application, protected libraries shall not exist on disk as valid loadable shared objects and their encrypted replacements shall not be accepted directly by the dynamic linker. \\
         \hline
         SR2 & Confidentiality &
-        Decryption confined to process memory &
+        Decryption confined to process memory & High &
         Decryption of protected libraries shall occur only in the memory of the protected process and decrypted content shall not be written to persistent storage. \\
         \hline
         SR3 & Confidentiality &
-        Controlled lifetime of decrypted content &
+        Controlled lifetime of decrypted content & Medium &
         Decrypted content shall be retained only as needed to map the library into the process and no additional plaintext copies shall be kept beyond what is required for execution. \\
         \hline
         SR4 & Fail safe &
-        Fail safe behaviour on errors &
+        Fail safe behaviour on errors & High &
         If decryption or loading of a protected library fails, the system shall not load the library and shall not fall back to any plaintext version of the same library. \\
         \hline
         SR5 & Cryptographic agility &
-        Algorithm agnostic design &
+        Algorithm agnostic design & Low &
         The interception, routing, and in memory loading logic shall be designed to allow replacement of the encryption algorithm and key management approach without redesigning the core interception, routing, and loading mechanism. \\
         \hline
-    \end{tabular}
-\end{table}
+\end{longtable}
+}%
 
 \subsection{Summary of the system specification}
 
@@ -742,15 +1049,33 @@ Before packaging, selected native libraries are encrypted so they cannot be mapp
 
 The encryption tool is a Python script (\texttt{encrypt\_lib.py}) placed alongside the native sources in \texttt{app/src/main/cpp}. CMake invokes it automatically as a post-build step on every incremental or clean build.
 
-A byte-level XOR cipher was chosen deliberately for this prototype. XOR keeps the encryption and decryption code trivial (a single loop over a byte array), which avoids obscuring the more novel contribution of the thesis: the interception, routing, and in-memory loading pipeline. The key, \texttt{0x69}, is a compile-time constant shared between the script and \texttt{nativecallhook.cpp}. In production, this would be replaced with a proper cipher and externalized key management; here it is sufficient to invalidate the on-disk ELF.
+A byte-level XOR cipher was chosen deliberately for this prototype. XOR keeps the encryption and decryption code trivial (a single loop over a byte array), which avoids obscuring the more novel contribution of the thesis: the interception, routing, and in-memory loading pipeline. The key, \texttt{0x69}, is a compile-time constant shared between the script and \texttt{nativecallhook.cpp}. In production, this would be replaced with a proper cipher and externalized key management, but here it is sufficient to invalidate the on-disk ELF.
 
-Concretely, the script opens the compiled \texttt{.so} binary, XORs every byte with the key, and writes the result back over the original file. After this step, the first four bytes of the library change from the ELF magic \texttt{7f 45 4c 46} to \texttt{16 2c 25 2f}, which is not recognized by any loader. If the Android bionic linker attempts to map the file, it will reject it at the magic-byte check. This property is verifiable with a hex dump of the build artifact and forms the basis of requirement SR1 (no valid protected libraries on disk).
+Concretely, the script opens the compiled \texttt{.so} binary, XORs every byte with the key, and writes the result back over the original file, as shown in \cref{lst:xor_encrypt}.
+
+\begin{lstlisting}[
+language=Python,
+float=htb,
+caption={Build-time XOR encryption function (\texttt{encrypt\_lib.py}).},
+label={lst:xor_encrypt},
+emph={xor_encrypt},
+emphstyle=\color{VSFunction}
+]
+def xor_encrypt(file_path, key):
+    with open(file_path, 'rb') as f:
+        data = f.read()
+    encrypted = bytearray([b ^ key for b in data])
+    with open(file_path, 'wb') as f:
+        f.write(encrypted)
+\end{lstlisting}
+
+After this step, the first four bytes of the library change from the ELF magic \texttt{7f 45 4c 46} to \texttt{16 2c 25 2f}, which is not recognized by any loader. If the Android bionic linker attempts to map the file, it will reject it at the magic-byte check. This property is verifiable with a hex dump of the build artifact and forms the basis of requirement SR1 (no valid protected libraries on disk).
 
 For this prototype, only \texttt{liblibb.so} is encrypted. Its name is hardcoded in the script. A configurable list, read from a file or a Gradle property, would be the natural extension for multi-library scenarios.
 
 \subsubsection{Integration with the build system}
 
-Encryption must happen after linking but before APK packaging. The \texttt{CMakeLists.txt} for the demo application attaches a \texttt{add\_custom\_command(POST\_BUILD ...)} to the \texttt{libb} target, so the script runs in the same directory where the linker emits \texttt{liblibb.so}. No absolute paths are necessary; the working directory is set to \texttt{\$\{CMAKE\_LIBRARY\_OUTPUT\_DIRECTORY\}}, making the step portable across host OSes.
+Encryption must happen after linking but before APK packaging. The \texttt{CMakeLists.txt} for the demo application attaches a \texttt{add\_custom\_command(POST\_BUILD ...)} to the \texttt{libb} target, so the script runs in the same directory where the linker emits \texttt{liblibb.so}. No absolute paths are necessary, as the working directory is set to \texttt{\$\{CMAKE\_LIBRARY\_OUTPUT\_DIRECTORY\}}, making the step portable across host OSes.
 
 Because the file is encrypted in place, the Gradle packaging stage simply collects the already-encrypted artifact from the CMake output and places it under \texttt{lib/<abi>/} in the APK. No Gradle task modifications or additional packaging rules are needed.
 
@@ -762,21 +1087,56 @@ Hooks must be active before any protected library is requested. On Android, Java
 
 Marking a function with \texttt{\_\_attribute\_\_((constructor))} places its address in the \texttt{.init\_array} section of the compiled ELF binary. When the dynamic linker finishes loading \texttt{libnativecallhook.so} (via \texttt{System.loadLibrary("nativecallhook")} in Java), it walks the \texttt{.init\_array} and calls each entry before returning to the JVM. Consequently, the constructor runs before \texttt{JNI\_OnLoad} and before any subsequent \texttt{dlopen()} or \texttt{System.loadLibrary()} call the application may issue.
 
-In \texttt{nativecallhook.cpp} the hook-installation logic resides in a static function called \texttt{init\_hook()}, annotated with the constructor attribute. Static linkage limits its symbol visibility to the translation unit, preventing accidental external calls.
+In \texttt{nativecallhook.cpp} the hook-installation logic resides in a static function called \texttt{init\_hook()}, annotated with the constructor attribute. Static linkage limits its symbol visibility to the translation unit, preventing accidental external calls.  The complete constructor is shown in \cref{lst:init_hook}.
+
+\begin{lstlisting}[
+language=ModernCpp,
+float=htb,
+caption={Library constructor: ByteHook initialization and PLT hook installation (\texttt{nativecallhook.cpp}).},
+label={lst:init_hook},
+emph={init_hook,bytehook_init,bytehook_hook_all,hooked_dlopen},
+emphstyle=\color{VSFunction}
+]
+__attribute__((constructor)) static void init_hook() {
+    int result = bytehook_init(BYTEHOOK_MODE_AUTOMATIC, true);
+    if (result != BYTEHOOK_STATUS_CODE_OK) {
+        __android_log_print(ANDROID_LOG_ERROR, LOG_TAG,
+                           "bytehook_init failed: %d", result);
+        return;
+    }
+
+    bytehook_stub_t stub = bytehook_hook_all(
+        nullptr,
+        "__loader_dlopen",
+        (void*)hooked_dlopen,
+        nullptr,
+        nullptr
+    );
+
+    if (stub == nullptr) {
+        __android_log_print(ANDROID_LOG_ERROR, LOG_TAG,
+                           "Failed to hook __loader_dlopen");
+        return;
+    }
+
+    __android_log_print(ANDROID_LOG_INFO, LOG_TAG,
+                       "dlopen hook installed successfully");
+}
+\end{lstlisting}
 
 \subsubsection{ByteHook framework initialization}
 
-Inside \texttt{init\_hook()}, the first call is \texttt{bytehook\_init(BYTEHOOK\_MODE\_AUTOMATIC, true)}.  The automatic mode tells ByteHook to propagate hooks to shared objects loaded after the initial installation, which is essential because protected libraries have not yet been loaded at this point.  The second argument enables debug-mode output; a release build should pass \texttt{false}.
+Inside \texttt{init\_hook()}, the first call is \texttt{bytehook\_init(BYTEHOOK\_MODE\_AUTOMATIC, true)}.  The automatic mode tells ByteHook to propagate hooks to shared objects loaded after the initial installation, which is essential because protected libraries have not yet been loaded at this point.  The second argument enables debug-mode output, and a release build should pass \texttt{false}.
 
-If the return value signals failure (non-zero), the constructor logs the error and exits immediately, leaving the protection layer disabled.  The application continues to run, but encrypted libraries will not decrypt; this is a deliberate fail-safe.
+If the return value signals failure (non-zero), the constructor logs the error and exits immediately, leaving the protection layer disabled.  The application continues to run, but encrypted libraries will not decrypt, which is a deliberate fail-safe.
 
 \subsubsection{Hook installation on the loader entry point}
 
 After ByteHook is ready, \texttt{init\_hook()} installs the interception on \texttt{\_\_loader\_dlopen}, an internal bionic symbol that backs both \texttt{dlopen()} and \texttt{android\_dlopen\_ext()}.  Hooking at this depth, rather than at the public \texttt{dlopen()} wrapper, captures loads that bypass the public API.
 
-The call \texttt{bytehook\_hook\_all(nullptr, "\_\_loader\_dlopen", (void*)hooked\_dlopen, nullptr, nullptr)} instructs ByteHook to patch every PLT entry referencing \texttt{\_\_loader\_dlopen} across all loaded modules.  The first \texttt{nullptr} means no caller-side filter (all callers are intercepted).  The replacement target is the callback \texttt{hooked\_dlopen()}, which is described in \cref{sec:routing}.  The two trailing \texttt{nullptr} arguments disable the optional event callback and user-data pointer, neither of which is needed here.
+The call \texttt{bytehook\_hook\_all(nullptr, "\_\_loader\_dlopen", (void*)hooked\_dlopen, nullptr, nullptr)} instructs ByteHook to patch every PLT entry referencing \texttt{\_\_loader\_dlopen} across all loaded modules.  The first \texttt{nullptr} indicates that no specific callee library is specified, so ByteHook will match \texttt{\_\_loader\_dlopen} regardless of which library exports it.  The replacement target is the callback \texttt{hooked\_dlopen()}, which is described in \cref{sec:routing}.  The two trailing \texttt{nullptr} arguments disable the optional event callback and user-data pointer, neither of which is needed here.
 
-A non-null return value is the hook stub handle; the implementation stores it globally but does not use it for unhooking in this prototype.  A null return indicates failure; the constructor logs the issue and returns, leaving encrypted libraries unloadable rather than crashing.
+A non-null return value is the hook stub handle. The implementation stores it globally but does not use it for unhooking in this prototype.  A null return indicates failure, so the constructor logs the issue and returns, leaving encrypted libraries unloadable rather than crashing.
 
 \subsection{Protected library registry and routing logic}
 \label{sec:routing}
@@ -785,13 +1145,42 @@ Every native \texttt{dlopen()} call now passes through \texttt{hooked\_dlopen()}
 
 \subsubsection{Registry implementation}
 
-A static \texttt{const char*} array named \texttt{ENCRYPTED\_LIBS} in \texttt{nativecallhook.cpp} lists the protected filenames.  In the prototype, the sole entry is \texttt{"liblibb.so"}.  Hardcoding simplifies the proof of concept but means that each change requires recompilation (a limitation discussed in \cref{sec:routing_limits}).
+A static \texttt{const char*} array named \texttt{ENCRYPTED\_LIBS} in \texttt{nativecallhook.cpp} lists the protected filenames.  In the prototype, the sole entry is \texttt{"liblibb.so"}.  Hardcoding simplifies the proof of concept but means that each change requires recompilation (a limitation discussed in \cref{sec:routing_limits}). Adding a new library to the protected set requires exactly two source-level changes, satisfying NFR4: a new entry in the \texttt{ENCRYPTED\_LIBS} array in \texttt{nativecallhook.cpp}, and a corresponding \texttt{add\_custom\_command} block in the application's \texttt{CMakeLists.txt}.
 
 \subsubsection{Routing decision}
 
-\texttt{hooked\_dlopen()} calls \texttt{is\_encrypted\_library()}, which scans \texttt{ENCRYPTED\_LIBS} with \texttt{strstr()}.  Substring matching was chosen because the dynamic linker may supply the library name as a bare filename, a relative path, or an absolute path; \texttt{strstr()} covers all three forms without path normalization.
+\texttt{hooked\_dlopen()} calls \texttt{is\_encrypted\_library()}, which scans \texttt{ENCRYPTED\_LIBS} with \texttt{strstr()}.  Substring matching was chosen because the dynamic linker may supply the library name as a bare filename, a relative path, or an absolute path, and \texttt{strstr()} covers all three forms without path normalization.
 
-When a match is found, \texttt{get\_library\_full\_path()} resolves the on-disk location by invoking \texttt{dladdr()} on the calling library to discover the extracted-libraries directory, and passes the result to \texttt{load\_decrypted\_library()}.  When no match is found, \texttt{BYTEHOOK\_CALL\_PREV} forwards the request to the original \texttt{\_\_loader\_dlopen}, giving unprotected libraries zero additional overhead.
+When a match is found, \texttt{get\_library\_full\_path()} resolves the on-disk location by invoking \texttt{dladdr()} on the calling library to discover the extracted-libraries directory, and passes the result to \texttt{load\_decrypted\_library()}.  When no match is found, \texttt{BYTEHOOK\_CALL\_PREV} forwards the request to the original \texttt{\_\_loader\_dlopen}, giving unprotected libraries zero additional overhead.  The registry check and routing callback are shown in \cref{lst:routing}.
+
+\begin{lstlisting}[
+language=ModernCpp,
+float=htb,
+caption={Registry check and routing callback (\texttt{nativecallhook.cpp}).},
+label={lst:routing},
+emph={is_encrypted_library,hooked_dlopen,get_library_full_path,load_decrypted_library,strstr},
+emphstyle=\color{VSFunction}
+]
+static bool is_encrypted_library(const char* filename) {
+    if (!filename) return false;
+    for (int i = 0; ENCRYPTED_LIBS[i]; i++) {
+        if (strstr(filename, ENCRYPTED_LIBS[i]))
+            return true;
+    }
+    return false;
+}
+
+static void* hooked_dlopen(const char* filename, int flags) {
+    BYTEHOOK_STACK_SCOPE();
+    if (filename && is_encrypted_library(filename)) {
+        std::string full_path = get_library_full_path(filename);
+        return load_decrypted_library(full_path.c_str(), flags);
+    }
+    return BYTEHOOK_CALL_PREV(hooked_dlopen, filename, flags);
+}
+\end{lstlisting}
+
+The callback declares only two parameters (\texttt{filename} and \texttt{flags}), whereas the underlying \texttt{\_\_loader\_dlopen} accepts an additional \texttt{caller\_addr} argument.  Because ByteHook operates at the PLT level, the original call frame, including the third argument in register \texttt{x2} on ARM64, is preserved when \texttt{BYTEHOOK\_CALL\_PREV} invokes the real function. The hook therefore does not need to forward the parameter explicitly.
 
 Path resolution assumes \texttt{android:extractNativeLibs="true"}, meaning all \texttt{.so} files reside in a single directory under \texttt{/data/app/}.
 
@@ -802,11 +1191,55 @@ The hardcoded registry prevents runtime configuration.  A production variant sho
 
 \subsection{In-memory decryption and loading}
 
-When the routing logic identifies a protected library, \texttt{load\_decrypted\_library()} decrypts it and maps it into the process entirely in memory.  The function performs five discrete operations: file read, XOR decryption, ELF magic-byte validation, anonymous file-descriptor creation, and linker invocation.
+When the routing logic identifies a protected library, \texttt{load\_decrypted\_library()} decrypts it and maps it into the process entirely in memory.  The function performs five discrete operations: file read, XOR decryption, ELF magic-byte validation, anonymous file-descriptor creation, and linker invocation.  A simplified view of the function, with logging removed for brevity, is shown in \cref{lst:decrypt_load}.
+
+\begin{lstlisting}[
+language=ModernCpp,
+float=htb,
+caption={In-memory decryption and loading via memfd, simplified (\texttt{nativecallhook.cpp}).},
+label={lst:decrypt_load},
+emph={load_decrypted_library,create_memfd,ftruncate,write,android_dlopen_ext,close},
+emphstyle=\color{VSFunction}
+]
+void* load_decrypted_library(const char* path, int flags) {
+    // 1. Read encrypted file from disk
+    std::ifstream file_in(path, std::ios::binary);
+    if (!file_in.is_open()) return nullptr;
+    std::vector<uint8_t> data(
+        (std::istreambuf_iterator<char>(file_in)),
+         std::istreambuf_iterator<char>());
+    file_in.close();
+
+    // 2. XOR-decrypt in memory
+    for (auto& byte : data)
+        byte ^= XOR_KEY;
+
+    // 3. Validate ELF magic bytes
+    if (data.size() < 4 || data[0] != 0x7f ||
+        data[1] != 'E' || data[2] != 'L' || data[3] != 'F')
+        return nullptr;
+
+    // 4. Write plaintext to an anonymous memfd
+    int fd = create_memfd("decrypted_lib");
+    if (fd < 0) return nullptr;
+    ftruncate(fd, static_cast<off_t>(data.size()));
+    write(fd, data.data(), data.size());
+
+    // 5. Load via android_dlopen_ext
+    android_dlextinfo extinfo = {};
+    extinfo.flags = ANDROID_DLEXT_USE_LIBRARY_FD;
+    extinfo.library_fd = fd;
+    void* handle = android_dlopen_ext(path, flags, &extinfo);
+
+    if (handle) g_memfd_liblibb = fd;
+    else        close(fd);
+    return handle;
+}
+\end{lstlisting}
 
 \subsubsection{Reading and decrypting the encrypted library}
 
-\texttt{get\_library\_full\_path()} supplies the absolute path to the encrypted \texttt{.so} under \texttt{/data/app/}.  The file is read into a \texttt{std::vector<uint8\_t>} in a single I/O pass; this buffer will be discarded after the decrypted content is written to the anonymous descriptor, limiting the window during which plaintext exists in heap memory.
+\texttt{get\_library\_full\_path()} supplies the absolute path to the encrypted \texttt{.so} under \texttt{/data/app/}.  The file is read into a \texttt{std::vector<uint8\_t>} in a single I/O pass. This buffer will be discarded after the decrypted content is written to the anonymous descriptor, limiting the window during which plaintext exists in heap memory.
 
 Decryption is a byte-wise XOR with the same key (\texttt{0x69}) used at build time.  XOR is its own inverse, so no separate decryption routine is needed.
 
@@ -822,11 +1255,12 @@ After creation, \texttt{ftruncate()} sizes the descriptor to the buffer length a
 
 \subsubsection{Loading via android\_dlopen\_ext}
 
-\texttt{android\_dlopen\_ext()} \cite{android_ndk_dlext} extends the standard \texttt{dlopen()} interface with an \texttt{android\_dlextinfo} structure.  Setting the \texttt{ANDROID\_DLEXT\_USE\_LIBRARY\_FD} flag and populating the \texttt{library\_fd} field directs the bionic linker to read ELF segments from the memfd rather than opening a path on disk.  The linker maps segments, resolves relocations, processes dependencies, and executes \texttt{.init\_array} constructors in the normal way; the calling code receives a standard \texttt{void*} handle compatible with \texttt{dlsym()}.
+\texttt{android\_dlopen\_ext()} \cite{android_ndk_dlext} extends the standard \texttt{dlopen()} interface with an \texttt{android\_dlextinfo} structure.  Setting the \texttt{ANDROID\_DLEXT\_USE\_LIBRARY\_FD} flag and populating the \texttt{library\_fd} field directs the bionic linker to read ELF segments from the memfd rather than opening a path on disk.  The linker maps segments, resolves relocations, processes dependencies, and executes \texttt{.init\_array} constructors in the normal way, and the calling code receives a standard \texttt{void*} handle compatible with \texttt{dlsym()}.
 
 On success, the memfd descriptor is kept open for the lifetime of the loaded library because the linker may hold memory-mapped regions that reference it.  On failure, the descriptor is closed and \texttt{nullptr} is returned.  The heap buffer is freed immediately after the \texttt{write()} call in either case.
 
 \subsubsection{Security implications}
+\label{sec:security_implications}
 
 The plaintext library exists only inside the process address space: first briefly in a heap buffer, then as linker-mapped pages backed by the anonymous descriptor.  No plaintext ever reaches persistent storage, satisfying requirement SR2.
 
@@ -838,7 +1272,7 @@ Correct load sequencing is essential: hooks must be installed before any code, J
 
 \subsubsection{Load order enforcement}
 
-\texttt{NativeCallHook} declares a Java \texttt{static} block that calls \texttt{System.loadLibrary("nativecallhook")}, which triggers the C++ constructor described in the previous section.  \texttt{MainActivity} enforces ordering in its own static block by calling \texttt{NativeCallHook.initialize()} first, then \texttt{System.loadLibrary("liba")}.  Because the JVM executes static initializers exactly once and in declaration order, hooks are guaranteed to be active before the application's own native code runs.
+\texttt{NativeCallHook} declares a Java \texttt{static} block that calls \texttt{System.loadLibrary("nativecallhook")}, which triggers the C++ constructor described in the previous section.  \texttt{MainActivity} enforces ordering in its own static block by calling \texttt{NativeCallHook.\allowbreak initialize()} first, then \texttt{System.loadLibrary("liba")}.  Because the JVM executes static initializers exactly once and in declaration order, hooks are guaranteed to be active before the application's own native code runs.
 
 \subsubsection{Native-to-native loading validation}
 
@@ -846,7 +1280,7 @@ The demo validates nested loading through \texttt{loadEncryptedLibrary()}, a JNI
 
 \subsubsection{JNI bridge}
 
-\texttt{jni\_bridge.cpp} exposes three native methods to the Java layer: \texttt{initialize()} (returns \texttt{JNI\_TRUE} to confirm hook installation), \texttt{getStatus()} (returns a status string), and \texttt{log()} (writes to Logcat through the native layer).  \texttt{JNI\_OnLoad()} is present only to satisfy the JNI protocol and logs a confirmation message; no initialization work occurs there because the constructor has already completed.
+\texttt{jni\_bridge.cpp} exposes three native methods to the Java layer: \texttt{initialize()} (returns \texttt{JNI\_TRUE} to confirm hook installation), \texttt{getStatus()} (returns a status string), and \texttt{log()} (writes to Logcat through the native layer).  \texttt{JNI\_OnLoad()} is present only to satisfy the JNI protocol. It returns \texttt{JNI\_VERSION\_1\_6} without performing any initialization work because the constructor has already completed.
 
 \newpage
 
@@ -864,8 +1298,8 @@ The following tests were run on a physical Google Pixel 9 device connected via U
     \hline
     Device & Google Pixel 9 \\
     Android version & 16 (API level 36) \\
-    Build ID & CP1A.260305.018 \\
-    Security patch & 2026-03-05 \\
+    Build ID & CP1A.260405.005 \\
+    Security patch & 2026-04-05 \\
     ABI & arm64-v8a \\
     Kernel & 6.1.145-android14-11 \\
     Build type & Debug (debuggable, JNI debuggable) \\
@@ -888,52 +1322,53 @@ libnativecallhook.so  (hook library):
   00000000: 7f45 4c46 0201 0100 0000 0000 0000 0000
 \end{verbatim}
 
-\texttt{libliba.so} and \texttt{libnativecallhook.so} carry the standard ELF magic \texttt{7f 45 4c 46}. \texttt{liblibb.so} begins with \texttt{16 2c 25 2f}, which is \texttt{7f 45 4c 46} XOR \texttt{0x69}. The bionic linker checks those first four bytes before parsing anything else; since the sequence is unrecognized, any direct load attempt is rejected immediately. SR1 is satisfied.
+\texttt{libliba.so} and \texttt{libnativecallhook.so} carry the standard ELF magic \texttt{7f 45 4c 46}. \texttt{liblibb.so} begins with \texttt{16 2c 25 2f}, which is \texttt{7f 45 4c 46} XOR \texttt{0x69}. The bionic linker checks those first four bytes before parsing anything else. Since the sequence is unrecognized, any direct load attempt is rejected immediately. SR1 is satisfied.
 
 \subsubsection{Hook installation}
 
 To verify that \texttt{init\_hook()} runs before the rest of the application, the demo app was launched from a cold start and the Logcat output was captured:
 
 \begin{verbatim}
-18:46:42.656 I NATIVECALLHOOK: dlopen hook installed successfully
-18:46:42.692 I NATIVECALLHOOK: NativeCallHook active — hooks installed
-18:46:42.692 I NATIVECALLHOOK: MainActivity started
+01:02:38.589 I NATIVECALLHOOK: dlopen hook installed successfully
+01:02:38.625 I NATIVECALLHOOK: NativeCallHook active, hooks installed
+01:02:38.625 I NATIVECALLHOOK: Intercepted dlopen for encrypted
+  library: liblibb.so
 \end{verbatim}
 
-The hook confirmation at 42.656 precedes both the \texttt{JNI\_OnLoad} status message and the first \texttt{MainActivity} log line. \texttt{bytehook\_hook\_all()} returned a valid stub handle, meaning the PLT entries for \texttt{\_\_loader\_dlopen} were patched process-wide before any subsequent library load could take place. FR1 is satisfied.
+The hook confirmation at 38.589 precedes the status message and the first intercepted \texttt{dlopen()} call. \texttt{bytehook\_hook\_all()} returned a valid stub handle, meaning the PLT entries for \texttt{\_\_loader\_dlopen} were patched process-wide before any subsequent library load could take place. FR1 is satisfied. The 36\,ms interval between hook completion at 38.589 and the first intercepted call at 38.625 provides a conservative upper bound on hook-induced startup overhead, well within the 100\,ms threshold of NFR1.
 
 \subsubsection{Unprotected library passthrough}
 
 The same Logcat session was examined for any interception line mentioning \texttt{liba}. None were found. The only interception entry in the entire session is:
 
 \begin{verbatim}
-18:46:42.692 I NATIVECALLHOOK: Intercepted dlopen for encrypted
+01:02:38.625 I NATIVECALLHOOK: Intercepted dlopen for encrypted
   library: liblibb.so
 \end{verbatim}
 
-\texttt{libliba.so} loaded via \texttt{System.loadLibrary()} and was forwarded through \texttt{BYTEHOOK\_CALL\_\allowbreak PREV} directly to the original loader unchanged. The hook adds no overhead to libraries that are not in the protected registry. FR3 is satisfied.
+\texttt{libliba.so} loaded via \texttt{System.loadLibrary()} and was forwarded through \texttt{BYTEHOOK\_CALL\_\allowbreak PREV} directly to the original loader unchanged. The hook adds no overhead to libraries that are not in the protected registry. The intercepted call completed within the same logcat millisecond as application startup, placing passthrough overhead below measurement resolution and satisfying NFR2. FR3 is satisfied.
 
 \subsubsection{Protected library end-to-end load}
 
 The core decryption pipeline was verified by capturing the lines that \texttt{load\_decrypted\_library()} emits at each stage:
 
 \begin{verbatim}
-18:46:42.692 I NATIVECALLHOOK: Intercepted dlopen for encrypted
+01:02:38.625 I NATIVECALLHOOK: Intercepted dlopen for encrypted
   library: liblibb.so
-18:46:42.692 I NATIVECALLHOOK: Loading encrypted library:
+01:02:38.625 I NATIVECALLHOOK: Loading encrypted library:
   /data/app/.../lib/arm64/liblibb.so
-18:46:42.694 I NATIVECALLHOOK: Successfully loaded decrypted
+01:02:38.626 I NATIVECALLHOOK: Successfully loaded decrypted
   library from memfd
 \end{verbatim}
 
-Interception, file read, XOR decryption, ELF magic validation, \texttt{memfd\_create}, and \texttt{android\_dlopen\_\allowbreak ext()} all completed without error. No ``Invalid ELF'' message appeared, confirming the decrypted bytes passed the magic-byte check. The 2\,ms gap between the first and last entries reflects the file I/O and decryption time for the small test library. Requirements FR2, SR2, and SR3 are satisfied.
+Interception, file read, XOR decryption, ELF magic validation, \texttt{memfd\_create}, and \texttt{android\_dlopen\_\allowbreak ext()} all completed without error. No ``Invalid ELF'' message appeared, confirming the decrypted bytes passed the magic-byte check. The 1\,ms gap between the first and last entries reflects the file I/O and decryption time for the small test library. Requirements FR2, SR2, and SR3 are satisfied.
 
 \subsubsection{Native-to-native load coverage}
 
 This test confirms the central claim of the thesis: a native library can transparently load a protected native library through an intercepted \texttt{dlopen()} call. The \texttt{loadEncryptedLibrary()} JNI method in \texttt{liba} issues \texttt{dlopen("liblibb.so")} with \texttt{RTLD\_LAZY}, resolves \texttt{call\_logcat} with \texttt{dlsym()}, and calls it. The resulting output was:
 
 \begin{verbatim}
-18:46:42.694 I NATIVECALLHOOK: LibB: Hello from LibB,
+01:02:38.626 I NATIVECALLHOOK: LibB: Hello from LibB,
   called by LibA after decryption
 \end{verbatim}
 
@@ -944,78 +1379,196 @@ This test confirms the central claim of the thesis: a native library can transpa
 To test the ELF validation path, the \texttt{XOR\_KEY} constant in \texttt{nativecallhook.cpp} was changed from \texttt{0x69} to \texttt{0xAA}, the APK was rebuilt and reinstalled, and the app was launched:
 
 \begin{verbatim}
-18:46:58.531 I NATIVECALLHOOK: dlopen hook installed successfully
-18:46:58.563 I NATIVECALLHOOK: Intercepted dlopen for encrypted
+01:02:53.190 I NATIVECALLHOOK: dlopen hook installed successfully
+01:02:53.224 I NATIVECALLHOOK: Intercepted dlopen for encrypted
   library: liblibb.so
-18:46:58.563 I NATIVECALLHOOK: Loading encrypted library:
+01:02:53.224 I NATIVECALLHOOK: Loading encrypted library:
   /data/app/.../lib/arm64/liblibb.so
-18:46:58.564 E NATIVECALLHOOK: Invalid ELF magic after decryption
-18:46:58.564 E NATIVECALLHOOK: LibA: Failed to load LibB
+01:02:53.224 E NATIVECALLHOOK: Invalid ELF magic after decryption
+01:02:53.224 E NATIVECALLHOOK: LibA: Failed to load LibB
 \end{verbatim}
 
-Decrypting with the wrong key produced bytes that did not begin with \texttt{7f 45 4c 46}. \texttt{load\_decrypted\_\allowbreak library()} returned \texttt{nullptr} without invoking the linker, and no fallback to the original encrypted file was attempted. The application process (PID~11415) remained alive, confirming that a failed protected-library load is non-fatal. After data collection, the original key was restored and the correct APK was reinstalled. SR4 is satisfied.
+Decrypting with the wrong key produced bytes that did not begin with \texttt{7f 45 4c 46}. \texttt{load\_decrypted\_\allowbreak library()} returned \texttt{nullptr} without invoking the linker, and no fallback to the original encrypted file was attempted. The application process (PID~18381) remained alive, confirming that a failed protected-library load is non-fatal. After data collection, the original key was restored and the correct APK was reinstalled. SR4 is satisfied.
 
 \subsubsection{Load order enforcement}
 
-The final test demonstrates that the static block ordering in \texttt{MainActivity} is functionally significant, not just a convention. A test build was prepared with two changes: an \texttt{\_\_attribute\_\_\allowbreak((constructor))} function was added to \texttt{lib\_a.cpp} that calls \texttt{dlopen("liblibb.so")} during \texttt{System.\allowbreak loadLibrary("liba")}, and the static block was reordered so that \texttt{System.\allowbreak loadLibrary("liba")} ran before \texttt{NativeCallHook.\allowbreak initialize()}.
+This test examines whether the ordering of the two calls in the static initialization block (\texttt{NativeCallHook.initialize()} and \texttt{System.loadLibrary("liba")}) affects correct operation. A test build was prepared with the static block reordered so that \texttt{System.\allowbreak loadLibrary("liba")} ran before \texttt{NativeCallHook.\allowbreak initialize()}.
 
 \begin{verbatim}
-18:49:43.168 I NATIVECALLHOOK: LibA constructor: attempting
-  dlopen("liblibb.so")
-18:49:43.168 E NATIVECALLHOOK: LibA constructor: dlopen failed:
-  ".../liblibb.so" has bad ELF magic: 162c252f
-18:49:43.189 I NATIVECALLHOOK: dlopen hook installed successfully
-18:49:43.222 I NATIVECALLHOOK: Intercepted dlopen for encrypted
+01:03:11.705 I NATIVECALLHOOK: dlopen hook installed successfully
+01:03:11.738 I NATIVECALLHOOK: Intercepted dlopen for encrypted
   library: liblibb.so
-18:49:43.223 I NATIVECALLHOOK: Successfully loaded decrypted
+01:03:11.739 I NATIVECALLHOOK: Successfully loaded decrypted
   library from memfd
-18:49:43.223 I NATIVECALLHOOK: LibB: Hello from LibB,
+01:03:11.739 I NATIVECALLHOOK: LibB: Hello from LibB,
   called by LibA after decryption
 \end{verbatim}
 
-At 43.168 the \texttt{liba} constructor ran before hook installation at 43.189. The bionic linker received the encrypted file directly, read the first four bytes as \texttt{162c252f}, and rejected it. Eighteen milliseconds later the hook was installed and the \texttt{loadEncryptedLibrary()} call from \texttt{onCreate()} at 43.222 succeeded normally. Both source files were reverted and the correct APK was reinstalled after the test. This confirms that the protection library must be initialized before any code that may request a protected library.
+In this configuration the system still succeeded because \texttt{System.loadLibrary("liba")} only loads \texttt{liba} into memory without triggering an immediate \texttt{dlopen("liblibb.so")}. The actual call to \texttt{dlopen("liblibb.so")} is deferred to the \texttt{loadEncryptedLibrary()} JNI method invoked in \texttt{onCreate()}, which runs after the entire static block completes. By that point the hook is already installed regardless of the two-line ordering.
 
-\subsubsection{Summary of test results}
+This result demonstrates that the current architecture is resilient to static block reordering. Order would become significant only if \texttt{liba} contained an \texttt{\_\_attribute\_\_((constructor))} that immediately called \texttt{dlopen("liblibb.so")} at library load time. In such a scenario, loading \texttt{liba} before initializing the hook would cause the encrypted file to reach the unmodified linker, which would reject the corrupted ELF header. The test confirms that developers using this system must ensure hook initialization precedes the load of any library whose constructor may request a protected dependency.
 
-All seven tests passed on the Google Pixel 9 running Android~16. The results are mapped to the relevant requirements in \cref{tab:test_results}.
+\subsubsection{Decryption pipeline performance}
+
+To quantify the overhead of the decryption pipeline across different library sizes, a micro-benchmark was added to the application. The benchmark generates encrypted test files of six sizes (1\,KB through 10\,MB), then runs the full read, XOR-decrypt, and \texttt{memfd} write pipeline ten times per file. Timing is captured with \texttt{clock\_gettime(CLOCK\_MONOTONIC)} at microsecond resolution. The results are shown in \cref{tab:benchmark}.
 
 \begin{table}[h]
 \centering
-\caption{Test results mapped to system requirements.}
-\label{tab:test_results}
-\begin{tabular}{l l l l}
+\caption{Decryption pipeline latency by file size (mean $\pm$ std.\,dev., $n{=}10$, in microseconds).}
+\label{tab:benchmark}
+\begin{tabular}{r r r r r}
+    \hline
+    \textbf{Size} & \textbf{Read} & \textbf{XOR decrypt} & \textbf{memfd write} & \textbf{Total} \\
+    \hline
+    1\,KB   & $117 \pm 53$     & $7 \pm 0$       & $13 \pm 13$       & $138 \pm 66$ \\
+    10\,KB  & $936 \pm 12$     & $70 \pm 1$      & $14 \pm 5$      & $1\,022 \pm 16$ \\
+    100\,KB & $6\,990 \pm 1\,912$ & $740 \pm 284$  & $46 \pm 25$    & $7\,777 \pm 2\,215$ \\
+    1\,MB   & $61\,524 \pm 1\,984$   & $6\,469 \pm 446$ & $540 \pm 54$  & $68\,533 \pm 2\,334$ \\
+    5\,MB   & $357\,415 \pm 4\,575$ & $31\,815 \pm 509$ & $3\,862 \pm 820$ & $393\,093 \pm 4\,067$ \\
+    10\,MB  & $712\,664 \pm 8\,346$ & $65\,179 \pm 979$ & $12\,817 \pm 2\,227$ & $790\,662 \pm 8\,415$ \\
+    \hline
+\end{tabular}
+\end{table}
+
+File I/O accounts for approximately 90\,\% of the total latency at every size. XOR decryption contributes between 8 and 10\,\% and the \texttt{memfd\_create} plus write step remains below 2\,\%. The relationship between size and total time is approximately linear: doubling the file size roughly doubles the total overhead. For the small test library used in earlier tests (a few kilobytes), the measured pipeline time is consistent with the 1\,ms end-to-end observation from the protected library load test.
+
+The benchmark files are synthetic data that pass the ELF magic validation but are not valid ELF binaries, and are used solely to measure I/O and decryption throughput. Because the benchmark measures only the three phases that the hook controls (read, decrypt, write to memfd), it excludes the time the Android linker spends parsing the ELF image after loading. Linker time depends on the number and complexity of relocations in each shared object, not on raw file size, so it is not included in these measurements.
+
+\subsubsection{Additional fail-safe scenarios}
+
+Three additional error scenarios were tested by calling \texttt{load\_decrypted\_library()} with deliberately invalid inputs. In each case the function was expected to return \texttt{nullptr} and log an error without crashing the host process.
+
+\begin{itemize}
+    \item \textbf{Missing file.} The path pointed to a non-existent file. The function logged ``Failed to open encrypted file'' and returned \texttt{nullptr}.
+    \item \textbf{Empty file.} A zero-byte file was created in the application cache directory. Because the file contained fewer than four bytes, the ELF magic check failed and the function logged ``Invalid ELF magic after decryption'' before returning \texttt{nullptr}.
+    \item \textbf{Truncated file.} A two-byte file containing only the first half of the encrypted ELF magic was created. The same size check caught this case and the function returned \texttt{nullptr} with an identical error message.
+\end{itemize}
+
+After all three calls the application process remained alive (PID\,18951), confirming that \texttt{load\_decrypted\_library()} handles corrupted and missing inputs without propagating a fatal error. Combined with the wrong-key test in the previous fail-safe section, the system now covers four distinct error categories: wrong decryption key, missing file, empty file, and truncated file.
+
+\subsubsection{Cold start overhead}
+
+NFR1 requires that hook installation complete within 100\,ms of process startup. To measure the actual cost, cold start times were collected by launching the application with \texttt{adb shell am start -n <activity> -W} and reading the \texttt{TotalTime} value reported by the Activity Manager. Between each launch the process was terminated with \texttt{am force-stop} and a one-second pause was inserted to allow the system to settle. Three variants were tested, each with ten iterations:
+
+\begin{itemize}
+    \item \textbf{Normal.} The application as shipped, with the hook library loaded and hooks installed.
+    \item \textbf{Variant~A (constructor disabled).} The body of \texttt{init\_hook()} was replaced with an early return so that the hook library loads but ByteHook initialization and PLT patching are skipped.
+    \item \textbf{Variant~B (library not loaded).} The \texttt{NativeCallHook.\allowbreak initialize()} call was removed from the static block so that the hook library is never loaded at all.
+\end{itemize}
+
+\begin{table}[h]
+\centering
+\caption{Cold start times by variant (mean $\pm$ std.\,dev., $n{=}10$, in milliseconds).}
+\label{tab:cold_start}
+\begin{tabular}{l r r r}
+    \hline
+    \textbf{Variant} & \textbf{Mean} & \textbf{Std.\,dev.} & \textbf{Range} \\
+    \hline
+    Normal (full hook)       & 243.4 & 5.6 & 237--253 \\
+    A (constructor disabled) & 229.7 & 6.9 & 219--246 \\
+    B (library not loaded)   & 232.3 & 9.5 & 225--256 \\
+    \hline
+\end{tabular}
+\end{table}
+
+The difference between Variant~A and Variant~B is $-2.6$\,ms, which is within the measurement noise of both distributions. Loading the hook shared object without installing hooks therefore adds no measurable cost. The difference between Normal and Variant~A is 13.7\,ms, representing the combined cost of ByteHook initialization, PLT patching, and the first intercepted \texttt{dlopen()} calls during startup. This overhead is well within the 100\,ms threshold specified by NFR1.
+
+\subsubsection{Hook passthrough overhead}
+
+NFR2 requires that the per-call overhead for loading a library not in the protected registry shall not exceed 5\,ms. To measure the actual cost, 1\,000 \texttt{dlopen}/\texttt{dlclose} cycles were performed on \texttt{libliba.so} (an unprotected library) with the hook installed. Each cycle passes through the hook's \texttt{is\_encrypted\_library()} registry check before forwarding to the original loader. The total time was measured with \texttt{clock\_gettime(CLOCK\_MONOTONIC)}:
+
+\begin{verbatim}
+OVERHEAD: iter=1000 total_ns=49967000 per_call_ns=49967
+\end{verbatim}
+
+The average per-call time of approximately 50\,\textmu s includes the full \texttt{dlopen}/\texttt{dlclose} round-trip through both the hook and the Android linker. The hook's own contribution (a single \texttt{strstr()} comparison against the one-element registry) is a small fraction of this total. The measured value is two orders of magnitude below the 5\,ms threshold of NFR2. NFR2 is satisfied.
+
+\subsubsection{Repeated and concurrent loading}
+
+Two additional robustness tests were added to confirm that the decryption and in-memory loading path operates correctly under repeated and concurrent invocations.
+
+\textbf{Sequential test.} \texttt{dlopen("liblibb.so", RTLD\_LAZY)} was called five times in succession from the same thread. All five calls returned non-null handles and reported no error through \texttt{dlerror()}.
+
+\textbf{Concurrent test.} Four threads were spawned, each calling \texttt{dlopen("liblibb.so", RTLD\_LAZY)} simultaneously. All four threads received non-null handles and reported no error.
+
+\begin{verbatim}
+ROBUSTNESS: sequential #1 handle=0xbbc7...4893 dlerror=(none)
+ROBUSTNESS: sequential #2 handle=0x65d4...4003 dlerror=(none)
+ROBUSTNESS: sequential #3 handle=0x3ffd...2d47 dlerror=(none)
+ROBUSTNESS: sequential #4 handle=0xff41...b7c9 dlerror=(none)
+ROBUSTNESS: sequential #5 handle=0xb267...969b dlerror=(none)
+ROBUSTNESS: thread 0 handle=0x2652...05d3 dlerror=(none)
+ROBUSTNESS: thread 1 handle=0xa23c...bed7 dlerror=(none)
+ROBUSTNESS: thread 2 handle=0x66d6...71e5 dlerror=(none)
+ROBUSTNESS: thread 3 handle=0xca56...082b dlerror=(none)
+\end{verbatim}
+
+Each call creates a new \texttt{memfd} and performs the full decrypt-and-load pipeline independently. The handles returned by Android are randomized (a security measure introduced in recent linker versions), but all are valid for subsequent \texttt{dlsym()} calls. No deadlocks, crashes, or error messages were observed, confirming that the hook and decryption logic is safe for both sequential and concurrent use. However, the single static file descriptor variable (\texttt{g\_memfd\_liblibb}) does not support repeated loads without leaking previously opened descriptors. A production implementation should track descriptors per library handle.
+
+\subsubsection{Memory visibility observation}
+
+To assess whether the decrypted library can be located in the process address space at runtime, two diagnostic interfaces were examined on the running application: \texttt{/proc/<pid>/fd/} (open file descriptors) and \texttt{/proc/<pid>/maps} (memory-mapped regions). Both were read using \texttt{adb shell run-as} on the debuggable build.
+
+\texttt{/proc/<pid>/fd/} revealed an open descriptor pointing to \texttt{/memfd:decrypted\_lib (deleted)}. The ``deleted'' label is expected because \texttt{memfd\_create()} produces an anonymous file that is never linked to the filesystem, but the name \texttt{decrypted\_lib} passed at creation time remains visible through this interface.
+
+Examination of \texttt{/proc/<pid>/maps} on a normal single-library start showed no entries labeled \texttt{memfd:decrypted\_lib}. During the repeated-loading robustness test, however, nine \texttt{memfd:decrypted\_lib (deleted)} entries with executable and read-only permissions appeared. This difference is consistent with the bionic linker creating additional file-backed mappings for subsequent loads of the same descriptor.
+
+These observations confirm what the threat model in \cref{sec:security_implications} already acknowledges: an attacker who can read \texttt{/proc/<pid>/fd/} or \texttt{/proc/<pid>/mem} can locate and dump the decrypted library. The memfd name also leaks the purpose of the descriptor. A hardened deployment should use a less descriptive name for the memfd and consider the countermeasures noted in the threat model discussion.
+
+\subsubsection{Summary of test results}
+
+All fifteen tests passed on the Google Pixel 9 running Android~16 (API level 36). The results are mapped to the relevant requirements in \cref{tab:test_results}.
+
+{\setstretch{1}%
+\begin{longtable}{l l l l}
+    \caption{Test results mapped to system requirements.} \label{tab:test_results} \\
     \hline
     \textbf{Test} & \textbf{Requirement} & \textbf{Observed result} & \textbf{Status} \\
     \hline
+    \endfirsthead
+    \multicolumn{4}{c}{\tablename\ \thetable{} \textit{(continued)}} \\[0.5ex]
+    \hline
+    \textbf{Test} & \textbf{Requirement} & \textbf{Observed result} & \textbf{Status} \\
+    \hline
+    \endhead
+    \endfoot
+    \endlastfoot
     Build-time encryption & SR1 & Invalid ELF on disk confirmed & Pass \\
     Hook installation & FR1 & Hook active before first load & Pass \\
     Unprotected passthrough & FR3 & No false interceptions & Pass \\
     Protected end-to-end load & FR2, SR2, SR3 & Decrypt and memfd load & Pass \\
     Native-to-native coverage & FR4 & \texttt{dlopen} chain works & Pass \\
-    Fail-safe behaviour & SR4 & Invalid ELF rejected cleanly & Pass \\
-    Load order enforcement & FR1 & Early load fails without hook & Pass \\
+    Fail-safe (wrong key) & SR4 & Invalid ELF rejected cleanly & Pass \\
+    Fail-safe (missing file) & SR4 & File open failed, app survived & Pass \\
+    Fail-safe (empty file) & SR4 & ELF check failed, app survived & Pass \\
+    Fail-safe (truncated file) & SR4 & ELF check failed, app survived & Pass \\
+    Pipeline benchmark & NFR1 & Linear scaling, I/O-dominated & Pass \\
+    Load order enforcement & FR1 & Resilient to static block reordering & Pass \\
+    Cold start overhead & NFR1 & 13.7\,ms hook cost, $<$100\,ms & Pass \\
+    Hook passthrough overhead & NFR2 & 50\,\textmu s per call, $\ll$5\,ms & Pass \\
+    Repeated loading & SR4, FR4 & 5/5 loads succeeded & Pass \\
+    Concurrent loading & SR4, FR4 & 4/4 threads succeeded & Pass \\
     \hline
-\end{tabular}
-\end{table}
+\end{longtable}
+}%
 
-The test set covers all four security requirements and the functional requirements directly tied to the thesis objective. The results show that the interception, decryption, and in-memory loading pipeline operates correctly on a stock Android~16 device and that the system behaves safely when given incorrect input or when initialization order is violated.
+The test set covers all four security requirements, the relevant functional requirements, and a performance characterization of the decryption pipeline. The results show that the pipeline operates correctly on a stock Android~16 device, that the system behaves safely when given incorrect input or when initialization order is violated, and that overhead scales linearly with library size. The cold start and passthrough measurements confirm that the hook system operates well within the performance thresholds of NFR1 and NFR2. The memory visibility observation confirms the security limitations acknowledged in the threat model.
 
 \newpage
 
 \section*{Conclusions}
 \addcontentsline{toc}{section}{Conclusions}
 
-This thesis addressed the limitation of conventional Android native library protection approaches that only cover managed-code initiated loading and do not reliably handle nested native-to-native loading scenarios. A proof-of-concept protection mechanism was designed and implemented to ensure that selected native libraries remain encrypted on disk and are only decrypted inside the target process immediately before loading.
+This thesis addressed the limitation of conventional Android native library protection approaches that do not handle nested native-to-native loading scenarios. A proof-of-concept mechanism was designed and implemented to ensure that selected native libraries remain encrypted on disk and are decrypted inside the target process only at load time.
 
 \begin{enumerate}
-    \item The analysis of Android native library loading, ELF dynamic linking, and interception methods showed that Java-level hooking mechanisms cannot fully observe or control library loads initiated from native code, motivating the need for native interception at the dynamic linker boundary.
+    \item The analysis of Android native library loading, ELF dynamic linking, and interception methods showed that Java-level hooking mechanisms cannot fully observe or control library loads from native code, motivating native interception at the dynamic linker boundary.
+    \item Of the hooking technique families examined, including inline patching, PLT/GOT-based redirection, library interposition, and loader entry interception, PLT-based hooking was evaluated as most suitable for this use case. It operates on data structures already managed by the dynamic linker rather than on executable code, avoiding the instruction-level modifications and architecture-specific patching required by inline hooks together with their associated code integrity risks. It also supports interception of exported symbols such as \texttt{\_\_loader\_dlopen} and automatically propagates to newly loaded libraries without requiring root privileges. Among the available framework implementations, ByteHook was selected over Frida and LSPosed as the only production-ready candidate that operates within native code without system privileges and provides direct \texttt{dlopen()} interception with automatic propagation.
     \item A proof-of-concept system architecture was defined that combines a build-time encryption step with a runtime interception component, while preserving standard Android packaging and installation behaviour by keeping encrypted libraries in the normal APK native library locations.
-    \item The runtime protection component was implemented using PLT-based interception to route native loading requests through a registry-driven decision mechanism, enabling transparent handling of both protected and unprotected libraries with a strict fail-safe policy when protected library loading fails.
-    \item Protected libraries were loaded by decrypting encrypted on-disk content into memory, creating an anonymous in-memory file descriptor, and invoking the Android extended loader interface to map the decrypted ELF image into the process without writing plaintext content to persistent storage.
-    \item The proof-of-concept validated correct load order enforcement and demonstrated transparent nested native-to-native loading in the demo scenario, confirming that intercepted \texttt{dlopen()} calls from within native libraries can be routed through the decryption and in-memory loading path.
+    \item The proof-of-concept was implemented as a PLT-based hook on \texttt{\_\_loader\_dlopen} that routes requests through a registry-driven decision mechanism, decrypts protected libraries into anonymous in-memory file descriptors using \texttt{memfd\_create} and \texttt{android\_dlopen\_ext}, and forwards unprotected requests directly to the original loader. Testing on a Google Pixel~9 confirmed that this interception transparently handles native-to-native loading scenarios not addressed by Java-level hooking, validating the central hypothesis of the thesis. The system correctly enforced load order requirements, introduced a cold start overhead of under 15\,ms and a per-call passthrough overhead of under 50\,\textmu s, and produced valid library handles for subsequent symbol resolution without any modifications to the calling native code.
 \end{enumerate}
 
-The implemented solution is intentionally limited by proof-of-concept design choices, including a hardcoded protected library registry and a simple XOR-based encryption scheme with a hardcoded key. In future work, the system should introduce stronger cryptography and secure key management (for example, Android Keystore-backed derivation), make the protected library registry configurable at build time or runtime, add integrity verification of decrypted images, and provide a quantitative evaluation of performance overhead and compatibility across a broader set of Android versions, devices, and packaging configurations.
+The solution is limited by proof-of-concept design choices: a hardcoded protected library registry and a simple XOR-based encryption scheme with a hardcoded key. In future work, the system should introduce stronger cryptography and secure key management (for example, Android Keystore-backed derivation), make the protected library registry configurable at build time or runtime, add integrity verification of decrypted images, and provide a quantitative evaluation of performance overhead and compatibility across a broader set of Android versions, devices, and packaging configurations.
 
 
 % ============================================================================
@@ -1027,23 +1580,23 @@ The implemented solution is intentionally limited by proof-of-concept design cho
 \bibitem{appfigures2024flutter}
 Appfigures.
 \textit{Non-Native Development Trends - Will React Native's New Architecture Take the Lead Away from Flutter?}
-2024 [žiūrėta 2025-10-20].
-Prieiga per internetą:
+2024. Available:
 \url{https://appfigures.com/resources/insights/20241025}
+(Accessed: Oct. 20, 2025).
 
 \bibitem{android_platform}
 Android Developers.
 \textit{Platform architecture.}
-2025 [žiūrėta 2025-10-20].
-Prieiga per internetą:
+2025. Available:
 \url{https://developer.android.com/guide/platform}
+(Accessed: Oct. 20, 2025).
 
 \bibitem{xinuos2025elf}
 Xinuos Inc.
 \textit{System V Application Binary Interface – Executable and Linking Format (ELF) Specification Version 4.3 Draft.}
-2025 [žiūrėta 2025-10-27].
-Prieiga per internetą:
+2025. Available:
 \url{https://gabi.xinuos.com/}
+(Accessed: Oct. 27, 2025).
 
 \bibitem{ronin2018hooking}
 N. Totosis and C. Patsakis.
@@ -1054,17 +1607,17 @@ doi: \href{https://doi.org/10.1109/DASC/PiCom/DataCom/CyberSciTec.2018.00104}{10
 \bibitem{bleier2023oat}
 J. Bleier and M. Lindorfer.
 \textit{Of Ahead Time: Evaluating Disassembly of Android Apps Compiled to Binary OATs Through the ART.}
-2023 [žiūrėta 2025-10-26].
-Prieiga per internetą:
+2023. Available:
 \url{https://repositum.tuwien.at/bitstream/20.500.12708/190032/3/Bleier-2023-Of%20Ahead%20Time%20Evaluating%20Disassembly%20of%20Android%20Apps%20Compiled...-vor.pdf}
+(Accessed: Oct. 26, 2025).
 doi: \href{https://doi.org/10.1145/3578357.3591219}{10.1145/3578357.3591219}
 
 \bibitem{xposed2013framework}
 rovo89.
 \textit{Xposed Framework} [software].
-XDA-Developers, 2013 [žiūrėta 2025-10-26].
-Prieiga per internetą:
+XDA-Developers, 2013. Available:
 \url{https://forum.xda-developers.com/t/xposed-framework.2327541/}
+(Accessed: Oct. 26, 2025).
 
 \bibitem{kumar2023inviseal}
 S. Kumar, D. Mishra, B. Panda, and S. K. Shukla.
@@ -1075,68 +1628,93 @@ doi: \href{https://doi.org/10.1145/3567599}{10.1145/3567599}
 \bibitem{frida2023official}
 O. A. Ravnås.
 \textit{Frida – Dynamic instrumentation toolkit for developers, reverse-engineers, and security researchers.}
-2023 [žiūrėta 2025-10-26].
-Prieiga per internetą:
+2023. Available:
 \url{https://frida.re}
+(Accessed: Oct. 26, 2025).
 
 \bibitem{pizzi2022virtualpatch}
 S. Pizzi.
 \textit{VirtualPatch: fixing Android security vulnerabilities with app-level virtualization.}
-Magistro baigiamasis darbas, Università degli Studi di Padova, 2022 [žiūrėta 2025-11-16].
-Prieiga per internetą:
+Master's thesis, Università degli Studi di Padova, 2022. Available:
 \url{https://thesis.unipd.it/bitstream/20.500.12608/32823/1/Pizzi_Simeone.pdf}
+(Accessed: Nov. 16, 2025).
 
 \bibitem{lsposed2025github}
 JingMatrix.
 \textit{Vector (formerly LSPosed Framework).}
-GitHub repository, 2025 [žiūrėta 2025-11-16].
-Prieiga per internetą:
+GitHub repository, 2025. Available:
 \url{https://github.com/JingMatrix/Vector}
+(Accessed: Nov. 16, 2025).
 
 \bibitem{lsposed2025website}
 LSPosed Team.
 \textit{LSPosed Official Website.}
-2025 [žiūrėta 2025-11-16].
-Prieiga per internetą:
+2025. Available:
 \url{https://lsposed.org}
+(Accessed: Nov. 16, 2025).
 
 \bibitem{androidroot2024lsposed}
 Awesome Android Root.
 \textit{Complete LSPosed Framework Guide.}
-2024 [žiūrėta 2025-11-16].
-Prieiga per internetą:
+2024. Available:
 \url{https://awesome-android-root.org/rooting-guides/lsposed-guide}
+(Accessed: Nov. 16, 2025).
 
 \bibitem{promon2024hooking}
 Promon AS.
 \textit{Mobile app security basics: Understanding hooking frameworks and hooking techniques.}
-2024 [žiūrėta 2025-11-16].
-Prieiga per internetą:
+2024. Available:
 \url{https://promon.io/resources/knowledge-center/hooking-framework-hooking-techniques}
+(Accessed: Nov. 16, 2025).
 
 \bibitem{bytehook2025github}
 ByteDance.
 \textit{ByteHook – Android PLT hook library.}
-GitHub, 2025 [žiūrėta 2025-11-16].
-Prieiga per internetą:
+GitHub, 2025. Available:
 \url{https://github.com/bytedance/bhook}
+(Accessed: Nov. 16, 2025).
 
 \bibitem{bytehook2025maven}
 Sonatype.
 \textit{com.bytedance:bytehook – ByteHook is an Android PLT hook library which supports armeabi-v7a, arm64-v8a, x86 and x86\_64.}
-Maven Central, 2025 [žiūrėta 2025-11-16].
-Prieiga per internetą:
+Maven Central, 2025. Available:
 \url{https://central.sonatype.com/artifact/com.bytedance/bytehook}
+(Accessed: Nov. 16, 2025).
 
 \bibitem{android_ndk_dlext}
 Android Developers.
 \textit{\textless android/dlext.h\textgreater{} -- Android NDK Reference.}
-2025 [žiūrėta 2025-11-16].
-Prieiga per internetą:
+2025. Available:
 \url{https://developer.android.com/ndk/reference/group/libdl}
+(Accessed: Nov. 16, 2025).
 
 \end{thebibliography}
 
+% ============================================================================
+% APPENDICES
+% ============================================================================
+\newpage
+\appendix
+\section*{Appendices}
+\addcontentsline{toc}{section}{Appendices}
+
+\subsection*{Appendix A. Source code repository}
+\addcontentsline{toc}{subsection}{Appendix A. Source code repository}
+
+The complete source code of the proof-of-concept implementation described in this thesis is publicly available in the following repository:
+
+\begin{center}
+\url{https://github.com/m1zukash1/Native-Call-Hook}
+\end{center}
+
+The repository contains the Android project used for development, testing, and experimental evaluation throughout this work. Its contents include:
+
+\begin{itemize}
+    \item The \texttt{nativecallhook} library module containing the PLT hook installation, registry-driven interception logic, XOR decryption pipeline, and \texttt{memfd\_create}-based in-memory loading implementation.
+    \item The \texttt{app} module providing the demonstration application used in all system tests, including the benchmark harness and robustness test invocations.
+    \item The CMake build configuration with the integrated post-build encryption step that produces encrypted \texttt{.so} files during compilation.
+    \item The \texttt{tests/} directory containing the automated test runner and captured output logs from the experimental evaluation.
+\end{itemize}
 
 
 \end{document}

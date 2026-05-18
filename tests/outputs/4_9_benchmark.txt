@@ -1,0 +1,25 @@
+Test: Decryption pipeline performance across file sizes
+Methodology: 10 iterations per size, measuring read + XOR-decrypt + memfd_write
+Sizes: 1KB, 10KB, 100KB, 1MB, 5MB, 10MB
+
+--- Benchmark results ---
+05-18 01:03:23.305 18815 18842 I NATIVECALLHOOK: BENCHMARK: starting (6 sizes, 10 iterations each)
+05-18 01:03:23.307 18815 18842 I NATIVECALLHOOK: BENCHMARK: size=1024 iter=10 read=117+/-53 decrypt=7+/-0 memfd_write=13+/-13 total=138+/-66 (us)
+05-18 01:03:23.318 18815 18842 I NATIVECALLHOOK: BENCHMARK: size=10240 iter=10 read=936+/-12 decrypt=70+/-1 memfd_write=14+/-5 total=1022+/-16 (us)
+05-18 01:03:23.403 18815 18842 I NATIVECALLHOOK: BENCHMARK: size=102400 iter=10 read=6990+/-1912 decrypt=740+/-284 memfd_write=46+/-25 total=7777+/-2215 (us)
+05-18 01:03:24.158 18815 18842 I NATIVECALLHOOK: BENCHMARK: size=1048576 iter=10 read=61524+/-1984 decrypt=6469+/-446 memfd_write=540+/-54 total=68533+/-2334 (us)
+05-18 01:03:28.434 18815 18842 I NATIVECALLHOOK: BENCHMARK: size=5242880 iter=10 read=357415+/-4575 decrypt=31815+/-509 memfd_write=3862+/-820 total=393093+/-4067 (us)
+05-18 01:03:37.031 18815 18842 I NATIVECALLHOOK: BENCHMARK: size=10485760 iter=10 read=712664+/-8346 decrypt=65179+/-979 memfd_write=12817+/-2227 total=790662+/-8415 (us)
+05-18 01:03:37.034 18815 18842 I NATIVECALLHOOK: BENCHMARK: complete
+
+--- Full logcat ---
+--------- beginning of main
+05-18 01:03:23.287 18815 18815 I NATIVECALLHOOK: dlopen hook installed successfully
+05-18 01:03:23.305 18815 18842 I NATIVECALLHOOK: BENCHMARK: starting (6 sizes, 10 iterations each)
+05-18 01:03:23.307 18815 18842 I NATIVECALLHOOK: BENCHMARK: size=1024 iter=10 read=117+/-53 decrypt=7+/-0 memfd_write=13+/-13 total=138+/-66 (us)
+05-18 01:03:23.318 18815 18842 I NATIVECALLHOOK: BENCHMARK: size=10240 iter=10 read=936+/-12 decrypt=70+/-1 memfd_write=14+/-5 total=1022+/-16 (us)
+05-18 01:03:23.403 18815 18842 I NATIVECALLHOOK: BENCHMARK: size=102400 iter=10 read=6990+/-1912 decrypt=740+/-284 memfd_write=46+/-25 total=7777+/-2215 (us)
+05-18 01:03:24.158 18815 18842 I NATIVECALLHOOK: BENCHMARK: size=1048576 iter=10 read=61524+/-1984 decrypt=6469+/-446 memfd_write=540+/-54 total=68533+/-2334 (us)
+05-18 01:03:28.434 18815 18842 I NATIVECALLHOOK: BENCHMARK: size=5242880 iter=10 read=357415+/-4575 decrypt=31815+/-509 memfd_write=3862+/-820 total=393093+/-4067 (us)
+05-18 01:03:37.031 18815 18842 I NATIVECALLHOOK: BENCHMARK: size=10485760 iter=10 read=712664+/-8346 decrypt=65179+/-979 memfd_write=12817+/-2227 total=790662+/-8415 (us)
+05-18 01:03:37.034 18815 18842 I NATIVECALLHOOK: BENCHMARK: complete

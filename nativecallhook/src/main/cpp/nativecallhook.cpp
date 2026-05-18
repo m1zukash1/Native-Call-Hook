@@ -65,11 +65,7 @@ static int create_memfd(const char* name) {
 #endif
 }
 
-/**
- * Load an encrypted library from disk, decrypt it in memory,
- * and load it using android_dlopen_ext with memfd
- */
-static void* load_decrypted_library(const char* original_path, int flags) {
+void* load_decrypted_library(const char* original_path, int flags) {
     __android_log_print(ANDROID_LOG_INFO, LOG_TAG,
                        "Loading encrypted library: %s", original_path);
 
@@ -157,7 +153,6 @@ static void* hooked_dlopen(const char* filename, int flags) {
         return load_decrypted_library(full_path.c_str(), flags);
     }
 
-    // Non-encrypted library: forward to original dlopen
     return BYTEHOOK_CALL_PREV(hooked_dlopen, filename, flags);
 }
 
@@ -193,7 +188,7 @@ std::string getStatus() {
     return "NativeCallHook active — hooks installed";
 }
 
-void log(const std::string& message) {
+void nch_log(const std::string& message) {
     __android_log_print(ANDROID_LOG_INFO, LOG_TAG, "%s", message.c_str());
 }
 

@@ -14,6 +14,7 @@ import time
 
 PACKAGE = "lt.vilniustech.ezukauskas.nativecallhook"
 ACTIVITY = f"{PACKAGE}/.MainActivity"
+TEST_ACTIVITY = f"{PACKAGE}/.TestActivity"
 APK_PATH = os.path.join("app", "build", "outputs", "apk", "debug", "app-debug.apk")
 OUTPUT_DIR = os.path.join("tests", "outputs")
 LOG_TAG = "NATIVECALLHOOK"
@@ -353,21 +354,13 @@ def test_load_order(serial):
 
     original_java = read_file_text(MAINACTIVITY_JAVA)
 
-    # Match the actual file content for the static block
     old_block = (
-        '        // Initialize the dlopen hook FIRST — before loading any other native libraries.\n'
-        '        // This ensures all subsequent dlopen calls pass through the hook.\n'
         '        NativeCallHook.initialize();\n'
-        '\n'
-        '        // Load the demo library; its dlopen("liblibb.so") call will be intercepted.\n'
         '        System.loadLibrary("liba");'
     )
 
     new_block = (
-        '        // SWAPPED ORDER FOR TESTING: load liba BEFORE initializing hook\n'
         '        System.loadLibrary("liba");\n'
-        '\n'
-        '        // Hook init happens AFTER liba is loaded\n'
         '        NativeCallHook.initialize();'
     )
 
@@ -447,6 +440,121 @@ def test_load_order(serial):
 
 
 # ──────────────────────────────────────────────────────────────────────
+# 4.9 Performance benchmark (multi-size decryption pipeline)
+# ──────────────────────────────────────────────────────────────────────
+def test_benchmark(serial):
+    print("\n[4.9] Performance benchmark (multi-size decryption pipeline)...")
+    force_stop(serial)
+    clear_logcat(serial)
+
+    adb_shell(serial, f'am start -n {TEST_ACTIVITY} --es mode benchmark -W')
+    # Wait for all benchmark iterations to finish (6 sizes × 10 iterations)
+    time.sleep(20)
+
+    logs = capture_logcat(serial, timeout=10)
+    benchmark_lines = [l for l in logs.splitlines() if "BENCHMARK:" in l]
+
+    out = (
+        "Test: Decryption pipeline performance across file sizes\n"
+        "Methodology: 10 iterations per size, measuring read + XOR-decrypt + memfd_write\n"
+        "Sizes: 1KB, 10KB, 100KB, 1MB, 5MB, 10MB\n\n"
+        "--- Benchmark results ---\n"
+        + ("\n".join(benchmark_lines) if benchmark_lines else "(no benchmark output)")
+        + f"\n\n--- Full logcat ---\n{logs}\n"
+    )
+    save("4_9_benchmark.txt", out)
+    print(out)
+
+
+# ──────────────────────────────────────────────────────────────────────
+# 4.10 Fail-safe: missing file, empty file, truncated file
+# ──────────────────────────────────────────────────────────────────────
+def test_failsafe_extra(serial):
+    print("\n[4.10] Fail-safe: missing / empty / truncated file...")
+    force_stop(serial)
+    clear_logcat(serial)
+
+    adb_shell(serial, f'am start -n {TEST_ACTIVITY} --es mode test_failsafe -W')
+    time.sleep(5)
+
+    logs = capture_logcat(serial, timeout=5)
+    failsafe_lines = [l for l in logs.splitlines()
+                      if "FAILSAFE_TEST:" in l or "Failed to open" in l
+                      or "Invalid ELF" in l]
+
+    pid = adb_shell(serial, f"pidof {PACKAGE}", check=False)
+
+    out = (
+        "Test: Fail-safe behaviour for missing, empty, and truncated files\n"
+        "Methodology: Direct calls to load_decrypted_library with invalid inputs\n"
+        "Expected: Each call logs an error and returns nullptr, app survives\n\n"
+        "--- Fail-safe log lines ---\n"
+        + ("\n".join(failsafe_lines) if failsafe_lines else "(none)")
+        + f"\n\nApp process alive: "
+        + f"{'yes (PID ' + pid.strip() + ')' if pid.strip() else 'no'}\n"
+        + f"\n--- Full logcat ---\n{logs}\n"
+    )
+    save("4_10_failsafe_extra.txt", out)
+    print(out)
+
+
+# ──────────────────────────────────────────────────────────────────────
+# 4.11 Robustness (repeated and concurrent loads)
+# ──────────────────────────────────────────────────────────────────────
+def test_robustness(serial):
+    print("\n[4.11] Robustness (repeated and concurrent loads)...")
+    force_stop(serial)
+    clear_logcat(serial)
+
+    adb_shell(serial, f'am start -n {TEST_ACTIVITY} --es mode test_robustness -W')
+    time.sleep(10)
+
+    logs = capture_logcat(serial, timeout=5)
+    robustness_lines = [l for l in logs.splitlines() if "ROBUSTNESS:" in l]
+
+    pid = adb_shell(serial, f"pidof {PACKAGE}", check=False)
+
+    out = (
+        "Test: Robustness under repeated and concurrent encrypted library loads\n"
+        "Methodology: 5 sequential dlopen calls + 4 concurrent threads\n"
+        "Expected: All calls succeed or return cached handle, app survives\n\n"
+        "--- Robustness log lines ---\n"
+        + ("\n".join(robustness_lines) if robustness_lines else "(none)")
+        + f"\n\nApp process alive: "
+        + f"{'yes (PID ' + pid.strip() + ')' if pid.strip() else 'no'}\n"
+        + f"\n--- Full logcat ---\n{logs}\n"
+    )
+    save("4_11_robustness.txt", out)
+    print(out)
+
+
+# ──────────────────────────────────────────────────────────────────────
+# 4.12 Hook overhead measurement
+# ──────────────────────────────────────────────────────────────────────
+def test_hook_overhead(serial):
+    print("\n[4.12] Hook overhead measurement...")
+    force_stop(serial)
+    clear_logcat(serial)
+
+    adb_shell(serial, f'am start -n {TEST_ACTIVITY} --es mode test_overhead -W')
+    time.sleep(5)
+
+    logs = capture_logcat(serial, timeout=5)
+    overhead_lines = [l for l in logs.splitlines() if "OVERHEAD:" in l]
+
+    out = (
+        "Test: Hook overhead for non-encrypted library dlopen calls\n"
+        "Methodology: 1000 dlopen/dlclose cycles on libliba.so (non-encrypted)\n"
+        "Expected: Minimal per-call overhead from is_encrypted_library() check\n\n"
+        "--- Overhead results ---\n"
+        + ("\n".join(overhead_lines) if overhead_lines else "(none)")
+        + f"\n\n--- Full logcat ---\n{logs}\n"
+    )
+    save("4_12_hook_overhead.txt", out)
+    print(out)
+
+
+# ──────────────────────────────────────────────────────────────────────
 # Main
 # ──────────────────────────────────────────────────────────────────────
 def main():
@@ -475,6 +583,10 @@ def main():
     test_native_to_native(args.serial, full_logs)
     test_failsafe(args.serial)
     test_load_order(args.serial)
+    test_benchmark(args.serial)
+    test_failsafe_extra(args.serial)
+    test_robustness(args.serial)
+    test_hook_overhead(args.serial)
 
     print("\n" + "=" * 60)
     print(f"All tests complete. Outputs saved to {OUTPUT_DIR}/")

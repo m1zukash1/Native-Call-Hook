@@ -1,28 +1,23 @@
 Test: System.loadLibrary("liba") called BEFORE NativeCallHook.initialize()
-      with __attribute__((constructor)) in lib_a.cpp that calls dlopen("liblibb.so")
-Expected: Hook not installed when liba's constructor tries dlopen("liblibb.so"),
+Expected: Hook not installed when liba tries dlopen("liblibb.so"),
           so the encrypted file is passed to the real linker which rejects it.
 
---- Logcat output ---
-04-27 18:49:43.168 11915 11915 I NATIVECALLHOOK: LibA constructor: attempting dlopen("liblibb.so")
-04-27 18:49:43.168 11915 11915 E NATIVECALLHOOK: LibA constructor: dlopen failed: dlopen failed: "/data/app/~~Pajv56YVeh_kEjnYYNIn8A==/lt.vilniustech.ezukauskas.nativecallhook-iy_Ckus478rniMDrCSGCMg==/lib/arm64/liblibb.so" has bad ELF magic: 162c252f
-04-27 18:49:43.189 11915 11915 I NATIVECALLHOOK: dlopen hook installed successfully
-04-27 18:49:43.222 11915 11915 I NATIVECALLHOOK: NativeCallHook active — hooks installed
-04-27 18:49:43.222 11915 11915 I NATIVECALLHOOK: MainActivity started
-04-27 18:49:43.222 11915 11915 I NATIVECALLHOOK: Intercepted dlopen for encrypted library: liblibb.so
-04-27 18:49:43.222 11915 11915 I NATIVECALLHOOK: Loading encrypted library: /data/app/~~Pajv56YVeh_kEjnYYNIn8A==/lt.vilniustech.ezukauskas.nativecallhook-iy_Ckus478rniMDrCSGCMg==/lib/arm64/liblibb.so
-04-27 18:49:43.223 11915 11915 I NATIVECALLHOOK: Successfully loaded decrypted library from memfd
-04-27 18:49:43.223 11915 11915 I NATIVECALLHOOK: LibB: Hello from LibB, called by LibA after decryption
+--- Failure log lines ---
+(none)
 
---- Analysis ---
-Line 1: liba constructor runs BEFORE hooks are installed.
-Line 2: dlopen("liblibb.so") fails because the bionic linker reads the file directly
-         and rejects it with ELF magic 162c252f (encrypted) instead of 7f454c46.
-Line 3: NativeCallHook.initialize() installs hooks AFTER the failed load.
-Lines 5-8: Later loadEncryptedLibrary() from onCreate() succeeds because hooks are now active.
+--- Success lines ---
+05-18 01:03:11.739 18649 18649 I NATIVECALLHOOK: Successfully loaded decrypted library from memfd
 
-App process alive after failure: yes (PID 11915)
+--- LibB output ---
+05-18 01:03:11.739 18649 18649 I NATIVECALLHOOK: LibB: Hello from LibB, called by LibA after decryption
 
-RESULT: Load order matters. Without hooks installed before the first dlopen() of a
-        protected library, the bionic linker rejects the encrypted file. The application
-        survives the failure but the protected library is not available to the calling code.
+App process alive: yes (PID 18649)
+
+--- Full logcat ---
+--------- beginning of main
+05-18 01:03:11.705 18649 18649 I NATIVECALLHOOK: dlopen hook installed successfully
+05-18 01:03:11.738 18649 18649 I NATIVECALLHOOK: NativeCallHook active â€” hooks installed
+05-18 01:03:11.738 18649 18649 I NATIVECALLHOOK: Intercepted dlopen for encrypted library: liblibb.so
+05-18 01:03:11.738 18649 18649 I NATIVECALLHOOK: Loading encrypted library: /data/app/~~rddRVt8RQooVq8CnJ6ov7g==/lt.vilniustech.ezukauskas.nativecallhook-L__tF4Ed7X9rSEbHCU1a4A==/lib/arm64/liblibb.so
+05-18 01:03:11.739 18649 18649 I NATIVECALLHOOK: Successfully loaded decrypted library from memfd
+05-18 01:03:11.739 18649 18649 I NATIVECALLHOOK: LibB: Hello from LibB, called by LibA after decryption

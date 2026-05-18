@@ -1,0 +1,66 @@
+Test: Robustness under repeated and concurrent encrypted library loads
+Methodology: 5 sequential dlopen calls + 4 concurrent threads
+Expected: All calls succeed or return cached handle, app survives
+
+--- Robustness log lines ---
+05-18 01:03:52.185 19064 19064 I NATIVECALLHOOK: ROBUSTNESS: starting
+05-18 01:03:52.185 19064 19064 I NATIVECALLHOOK: ROBUSTNESS: --- sequential repeated load (5 calls) ---
+05-18 01:03:52.186 19064 19064 I NATIVECALLHOOK: ROBUSTNESS: sequential #1 handle=0xbbc71a82f8a04893 dlerror=(none)
+05-18 01:03:52.187 19064 19064 I NATIVECALLHOOK: ROBUSTNESS: sequential #2 handle=0x65d468d7dd784003 dlerror=(none)
+05-18 01:03:52.187 19064 19064 I NATIVECALLHOOK: ROBUSTNESS: sequential #3 handle=0x3ffda7b53792d47 dlerror=(none)
+05-18 01:03:52.188 19064 19064 I NATIVECALLHOOK: ROBUSTNESS: sequential #4 handle=0xff416eaffbe3b7c9 dlerror=(none)
+05-18 01:03:52.188 19064 19064 I NATIVECALLHOOK: ROBUSTNESS: sequential #5 handle=0xb2673edbdd32969b dlerror=(none)
+05-18 01:03:52.189 19064 19064 I NATIVECALLHOOK: ROBUSTNESS: --- concurrent load (4 threads) ---
+05-18 01:03:52.189 19064 19093 I NATIVECALLHOOK: ROBUSTNESS: thread 3 handle=0xca5659ad9053082b dlerror=(none)
+05-18 01:03:52.190 19064 19092 I NATIVECALLHOOK: ROBUSTNESS: thread 2 handle=0x66d681996ca371e5 dlerror=(none)
+05-18 01:03:52.190 19064 19091 I NATIVECALLHOOK: ROBUSTNESS: thread 1 handle=0xa23cececf477bed7 dlerror=(none)
+05-18 01:03:52.192 19064 19090 I NATIVECALLHOOK: ROBUSTNESS: thread 0 handle=0x26524b9ef8dd05d3 dlerror=(none)
+05-18 01:03:52.192 19064 19064 I NATIVECALLHOOK: ROBUSTNESS: all 4 threads completed
+05-18 01:03:52.192 19064 19064 I NATIVECALLHOOK: ROBUSTNESS: complete
+
+App process alive: yes (PID 19064)
+
+--- Full logcat ---
+--------- beginning of main
+05-18 01:03:52.167 19064 19064 I NATIVECALLHOOK: dlopen hook installed successfully
+05-18 01:03:52.185 19064 19064 I NATIVECALLHOOK: ROBUSTNESS: starting
+05-18 01:03:52.185 19064 19064 I NATIVECALLHOOK: ROBUSTNESS: --- sequential repeated load (5 calls) ---
+05-18 01:03:52.185 19064 19064 I NATIVECALLHOOK: Intercepted dlopen for encrypted library: liblibb.so
+05-18 01:03:52.185 19064 19064 I NATIVECALLHOOK: Loading encrypted library: /data/app/~~HSwWjvdsGYRUcRhoFYECWQ==/lt.vilniustech.ezukauskas.nativecallhook-UaZuj3om78J3o64dNey8ww==/lib/arm64/liblibb.so
+05-18 01:03:52.186 19064 19064 I NATIVECALLHOOK: Successfully loaded decrypted library from memfd
+05-18 01:03:52.186 19064 19064 I NATIVECALLHOOK: ROBUSTNESS: sequential #1 handle=0xbbc71a82f8a04893 dlerror=(none)
+05-18 01:03:52.186 19064 19064 I NATIVECALLHOOK: Intercepted dlopen for encrypted library: liblibb.so
+05-18 01:03:52.186 19064 19064 I NATIVECALLHOOK: Loading encrypted library: /data/app/~~HSwWjvdsGYRUcRhoFYECWQ==/lt.vilniustech.ezukauskas.nativecallhook-UaZuj3om78J3o64dNey8ww==/lib/arm64/liblibb.so
+05-18 01:03:52.187 19064 19064 I NATIVECALLHOOK: Successfully loaded decrypted library from memfd
+05-18 01:03:52.187 19064 19064 I NATIVECALLHOOK: ROBUSTNESS: sequential #2 handle=0x65d468d7dd784003 dlerror=(none)
+05-18 01:03:52.187 19064 19064 I NATIVECALLHOOK: Intercepted dlopen for encrypted library: liblibb.so
+05-18 01:03:52.187 19064 19064 I NATIVECALLHOOK: Loading encrypted library: /data/app/~~HSwWjvdsGYRUcRhoFYECWQ==/lt.vilniustech.ezukauskas.nativecallhook-UaZuj3om78J3o64dNey8ww==/lib/arm64/liblibb.so
+05-18 01:03:52.187 19064 19064 I NATIVECALLHOOK: Successfully loaded decrypted library from memfd
+05-18 01:03:52.187 19064 19064 I NATIVECALLHOOK: ROBUSTNESS: sequential #3 handle=0x3ffda7b53792d47 dlerror=(none)
+05-18 01:03:52.187 19064 19064 I NATIVECALLHOOK: Intercepted dlopen for encrypted library: liblibb.so
+05-18 01:03:52.187 19064 19064 I NATIVECALLHOOK: Loading encrypted library: /data/app/~~HSwWjvdsGYRUcRhoFYECWQ==/lt.vilniustech.ezukauskas.nativecallhook-UaZuj3om78J3o64dNey8ww==/lib/arm64/liblibb.so
+05-18 01:03:52.188 19064 19064 I NATIVECALLHOOK: Successfully loaded decrypted library from memfd
+05-18 01:03:52.188 19064 19064 I NATIVECALLHOOK: ROBUSTNESS: sequential #4 handle=0xff416eaffbe3b7c9 dlerror=(none)
+05-18 01:03:52.188 19064 19064 I NATIVECALLHOOK: Intercepted dlopen for encrypted library: liblibb.so
+05-18 01:03:52.188 19064 19064 I NATIVECALLHOOK: Loading encrypted library: /data/app/~~HSwWjvdsGYRUcRhoFYECWQ==/lt.vilniustech.ezukauskas.nativecallhook-UaZuj3om78J3o64dNey8ww==/lib/arm64/liblibb.so
+05-18 01:03:52.188 19064 19064 I NATIVECALLHOOK: Successfully loaded decrypted library from memfd
+05-18 01:03:52.188 19064 19064 I NATIVECALLHOOK: ROBUSTNESS: sequential #5 handle=0xb2673edbdd32969b dlerror=(none)
+05-18 01:03:52.189 19064 19064 I NATIVECALLHOOK: ROBUSTNESS: --- concurrent load (4 threads) ---
+05-18 01:03:52.189 19064 19093 I NATIVECALLHOOK: Intercepted dlopen for encrypted library: liblibb.so
+05-18 01:03:52.189 19064 19093 I NATIVECALLHOOK: Loading encrypted library: /data/app/~~HSwWjvdsGYRUcRhoFYECWQ==/lt.vilniustech.ezukauskas.nativecallhook-UaZuj3om78J3o64dNey8ww==/lib/arm64/liblibb.so
+05-18 01:03:52.189 19064 19090 I NATIVECALLHOOK: Intercepted dlopen for encrypted library: liblibb.so
+05-18 01:03:52.189 19064 19090 I NATIVECALLHOOK: Loading encrypted library: /data/app/~~HSwWjvdsGYRUcRhoFYECWQ==/lt.vilniustech.ezukauskas.nativecallhook-UaZuj3om78J3o64dNey8ww==/lib/arm64/liblibb.so
+05-18 01:03:52.189 19064 19091 I NATIVECALLHOOK: Intercepted dlopen for encrypted library: liblibb.so
+05-18 01:03:52.189 19064 19091 I NATIVECALLHOOK: Loading encrypted library: /data/app/~~HSwWjvdsGYRUcRhoFYECWQ==/lt.vilniustech.ezukauskas.nativecallhook-UaZuj3om78J3o64dNey8ww==/lib/arm64/liblibb.so
+05-18 01:03:52.189 19064 19093 I NATIVECALLHOOK: Successfully loaded decrypted library from memfd
+05-18 01:03:52.189 19064 19093 I NATIVECALLHOOK: ROBUSTNESS: thread 3 handle=0xca5659ad9053082b dlerror=(none)
+05-18 01:03:52.189 19064 19092 I NATIVECALLHOOK: Intercepted dlopen for encrypted library: liblibb.so
+05-18 01:03:52.189 19064 19092 I NATIVECALLHOOK: Loading encrypted library: /data/app/~~HSwWjvdsGYRUcRhoFYECWQ==/lt.vilniustech.ezukauskas.nativecallhook-UaZuj3om78J3o64dNey8ww==/lib/arm64/liblibb.so
+05-18 01:03:52.190 19064 19092 I NATIVECALLHOOK: Successfully loaded decrypted library from memfd
+05-18 01:03:52.190 19064 19092 I NATIVECALLHOOK: ROBUSTNESS: thread 2 handle=0x66d681996ca371e5 dlerror=(none)
+05-18 01:03:52.190 19064 19091 I NATIVECALLHOOK: Successfully loaded decrypted library from memfd
+05-18 01:03:52.190 19064 19091 I NATIVECALLHOOK: ROBUSTNESS: thread 1 handle=0xa23cececf477bed7 dlerror=(none)
+05-18 01:03:52.192 19064 19090 I NATIVECALLHOOK: Successfully loaded decrypted library from memfd
+05-18 01:03:52.192 19064 19090 I NATIVECALLHOOK: ROBUSTNESS: thread 0 handle=0x26524b9ef8dd05d3 dlerror=(none)
+05-18 01:03:52.192 19064 19064 I NATIVECALLHOOK: ROBUSTNESS: all 4 threads completed
+05-18 01:03:52.192 19064 19064 I NATIVECALLHOOK: ROBUSTNESS: complete

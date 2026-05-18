@@ -2,19 +2,18 @@ Test: XOR_KEY changed from 0x69 to 0xAA (wrong key)
 Expected: ELF magic validation fails, library not loaded, app survives
 
 --- Fail-safe and error log lines ---
-04-27 18:46:58.564 11415 11415 E NATIVECALLHOOK: Invalid ELF magic after decryption
-04-27 18:46:58.564 11415 11415 E NATIVECALLHOOK: LibA: Failed to load LibB: undefined symbol: Java_lt_vilniustech_ezukauskas_nativecallhook_NativeCallHook_log__Ljava_lang_String_2
+05-18 01:02:53.224 18381 18381 E NATIVECALLHOOK: Invalid ELF magic after decryption
+05-18 01:02:53.224 18381 18381 E NATIVECALLHOOK: LibA: Failed to load LibB: undefined symbol: Java_lt_vilniustech_ezukauskas_nativecallhook_NativeCallHook_getStatus__
 
 ELF validation failed: True
 Library loaded successfully: False
-App process alive after failure: yes (PID 11415)
+App process alive after failure: yes (PID 18381)
 
 --- Full logcat ---
 --------- beginning of main
-04-27 18:46:58.531 11415 11415 I NATIVECALLHOOK: dlopen hook installed successfully
-04-27 18:46:58.563 11415 11415 I NATIVECALLHOOK: NativeCallHook active â€” hooks installed
-04-27 18:46:58.563 11415 11415 I NATIVECALLHOOK: MainActivity started
-04-27 18:46:58.563 11415 11415 I NATIVECALLHOOK: Intercepted dlopen for encrypted library: liblibb.so
-04-27 18:46:58.563 11415 11415 I NATIVECALLHOOK: Loading encrypted library: /data/app/~~_IuZhQsigXjvAGzf7jgQPA==/lt.vilniustech.ezukauskas.nativecallhook-9MIAmEJz8-La9yCLkVcghQ==/lib/arm64/liblibb.so
-04-27 18:46:58.564 11415 11415 E NATIVECALLHOOK: Invalid ELF magic after decryption
-04-27 18:46:58.564 11415 11415 E NATIVECALLHOOK: LibA: Failed to load LibB: undefined symbol: Java_lt_vilniustech_ezukauskas_nativecallhook_NativeCallHook_log__Ljava_lang_String_2
+05-18 01:02:53.190 18381 18381 I NATIVECALLHOOK: dlopen hook installed successfully
+05-18 01:02:53.224 18381 18381 I NATIVECALLHOOK: NativeCallHook active â€” hooks installed
+05-18 01:02:53.224 18381 18381 I NATIVECALLHOOK: Intercepted dlopen for encrypted library: liblibb.so
+05-18 01:02:53.224 18381 18381 I NATIVECALLHOOK: Loading encrypted library: /data/app/~~YzF8pKzLs9Lp94dYU76A0A==/lt.vilniustech.ezukauskas.nativecallhook-7p4V4Fry3Fxs03Q2VtBHOA==/lib/arm64/liblibb.so
+05-18 01:02:53.224 18381 18381 E NATIVECALLHOOK: Invalid ELF magic after decryption
+05-18 01:02:53.224 18381 18381 E NATIVECALLHOOK: LibA: Failed to load LibB: undefined symbol: Java_lt_vilniustech_ezukauskas_nativecallhook_NativeCallHook_getStatus__

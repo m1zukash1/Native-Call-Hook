@@ -1,0 +1,15 @@
+Test: Hook overhead for non-encrypted library dlopen calls
+Methodology: 1000 dlopen/dlclose cycles on libliba.so (non-encrypted)
+Expected: Minimal per-call overhead from is_encrypted_library() check
+
+--- Overhead results ---
+05-18 01:04:04.230 19155 19155 I NATIVECALLHOOK: OVERHEAD: starting
+05-18 01:04:04.280 19155 19155 I NATIVECALLHOOK: OVERHEAD: iter=1000 total_ns=49967000 per_call_ns=49967
+05-18 01:04:04.280 19155 19155 I NATIVECALLHOOK: OVERHEAD: complete
+
+--- Full logcat ---
+--------- beginning of main
+05-18 01:04:04.210 19155 19155 I NATIVECALLHOOK: dlopen hook installed successfully
+05-18 01:04:04.230 19155 19155 I NATIVECALLHOOK: OVERHEAD: starting
+05-18 01:04:04.280 19155 19155 I NATIVECALLHOOK: OVERHEAD: iter=1000 total_ns=49967000 per_call_ns=49967
+05-18 01:04:04.280 19155 19155 I NATIVECALLHOOK: OVERHEAD: complete
