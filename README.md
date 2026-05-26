@@ -28,4 +28,6 @@ Other frameworks use calls such as `android_dlopen_ext` in which case you should
 
 This is a proof of concept for the interception and in-memory loading pipeline, not a production-ready protection system. The XOR encryption with a hardcoded key is intentionally trivial. It keeps the crypto code out of the way so the interesting part (the hooking, routing, and memfd-backed loading) stays readable. A real deployment would swap in proper cryptography and key management without touching the interception logic.
 
-Tested on a Pixel 9 running Android 16. 15 system tests pass.
+## Fair warning
+
+The source code was written alongside my bachelor's thesis. Some comments, error paths, and structure choices exist to satisfy academic requirements rather than engineering ones. The core mechanism is real though.
