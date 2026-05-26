@@ -438,20 +438,20 @@ Autorius \textbf{Elvinas Žukauskas} \hfill Vadovas \textbf{doc.\ dr.\ Saulius V
 \fbox{\parbox{\dimexpr\textwidth-2\fboxsep-2\fboxrule}{%
 \strut\textbf{Anotacija}\par\vspace{0.3em}
 \setlength{\parindent}{1.5em}
-\indent Baigiamajame bakalauro darbe nagrinėjama Android vietinių bibliotekų apsauga naudojant vykdymo meto iššifravimą ir vietinių funkcijų perėmimo mechanizmus. Teorinėje dalyje analizuojami Android vietinių bibliotekų įkėlimo mechanizmai, ELF formato dinaminio susiejimo struktūros ir perėmimo technikos: tiesioginis instrukcijų pakeitimas, PLT/GOT lentelių modifikavimas, bibliotekų interpozicija ir įkėlimo taško perėmimas. Lyginami Android perėmimo karkasai Frida, LSPosed ir ByteHook pagal tinkamumą vietinių bibliotekų įkėlimo perėmimui be sistemos privilegijų. Praktinėje dalyje suprojektuotas ir įgyvendintas konceptualus apsaugos sprendimas naudojant PLT pagrįstą perėmimą per ByteHook biblioteką. Sistema kompiliavimo metu užšifruoja pasirinktas vietines bibliotekas XOR šifru, o vykdymo metu perima \texttt{\_\_loader\_dlopen} funkcijos iškvietimus, iššifruoja apsaugotas bibliotekas atmintyje per \texttt{memfd\_create} ir įkelia jas naudojant \texttt{android\_dlopen\_ext} sąsają. Sprendimas ištestuotas Google Pixel~9 įrenginyje su Android~16 (API lygis~36). Atlikti 15 sisteminių testų, patvirtinančių teisingą perėmimą, šaltojo paleidimo pridėtines sąnaudas mažesnes nei 15\,ms ir praeinančio iškvietimo sąnaudas mažesnes nei 50\,$\mu$s. Rezultatai patvirtino, kad PLT pagrįstas perėmimas gali skaidriai apdoroti vietinių bibliotekų tarpusavio įkėlimo scenarijus, kurių neaptarnauja Java lygio mechanizmai.\par
-\vspace{0.4em}
+\indent Baigiamajame bakalauro darbe nagrinėjama „Android“ vietinių bibliotekų apsauga, kai viena biblioteka įkelia kitą, visiškai apeidama „Java“ lygmenį. Kadangi operacinėje sistemoje „Java“ sluoksnio nepakanka šių bibliotekų įkėlimo procesams kontroliuoti, darbe sukurta vykdymo meto procedūrų susiejimo lentelės (angl. PLT) perėmimo sistema, skirta būtent šiam tikslui. Teorinėje dalyje aptariami bibliotekų įkėlimo mechanizmai, ELF dvejetainis formatas bei PLT metodų perėmimas. Taip pat lyginami „Frida“, „LSPosed“ ir „ByteHook“ karkasai, didžiausią dėmesį skiriant jų gebėjimui veikti įprastame programos procese be papildomų sistemos privilegijų. „ByteHook“ pasirinktas kaip tinkamiausias įrankis, nes jis nereikalauja išplėstinių teisių ir yra pritaikytas produkcinei aplinkai. Praktinėje dalyje suprojektuotas ir įgyvendintas koncepciją pagrindžiantis (angl. \textit{proof-of-concept}) architektūrinis sprendimas. Kompiliavimo metu pasirinktos vietinės bibliotekos yra užšifruojamos. Programos vykdymo pradžioje inicializuojamas PLT metodų perėmimo mechanizmas, kuris bibliotekų įkėlimo užklausas peradresuoja į realizuotą tarpinę (angl. \textit{proxy}) funkciją. Joje užšifruota biblioteka įkeliama tiesiai į atmintį, ten dešifruojama, perkeliama į anoniminį failų deskriptorių ir galiausiai integruojama į procesą. Sukurta sistema išbandyta „Google Pixel 9“ įrenginyje su „Android 16“ (36 API lygis) operacine sistema. Atlikti penkiolika testų patvirtino, kad sistema skaidriai apdoroja neapsaugotas bibliotekas, o apsaugotas – sėkmingai iššifruoja ir įkelia į procesą. Gauti rezultatai rodo, kad PLT metodų perėmimas yra tinkamas būdas perimti vietinių bibliotekų įkėlimo užklausas, o tai leidžia apsaugoti jas tais atvejais, kai jos iškviečiamos iš kitų vietinių bibliotekų.\par
+\vspace{1em}
 \setlength{\parindent}{0pt}
-Darbo sudaro 6 dalys: įvadas, aktualių technologijų analizė ir apžvalga, sistemos specifikacija, sistemos įgyvendinimas, sistemos testavimas ir išvados.\par
+Darbą sudaro 6 dalys: įvadas, aktualių technologijų analizė ir apžvalga, sistemos specifikacija, sistemos įgyvendinimas, išvados ir literatūros sąrašas.\par
 \vspace{0.2em}
-% NOTE: verify page count after compilation and adjust if needed
-Darbo apimtis\,--\,45 p.\ teksto su priedais, 13 iliustr., 7 lent., 16 bibliografinių šaltinių.\strut
+Darbo apimtis yra 56 puslapiai teksto su priedais, 13 iliustracijų, 7 lentelės ir 18 bibliografinių šaltinių.\strut
 }}
 
 \vspace{0.5cm}
 
 \noindent
 \fbox{\parbox{\dimexpr\textwidth-2\fboxsep-2\fboxrule}{%
-\strut\textbf{Prasminiai žodžiai:} Android, vietinės bibliotekos, PLT perėmimas, šifravimas, memfd, dinaminis susiejimas, ByteHook.\strut
+\hyphenpenalty=10000\exhyphenpenalty=10000%
+\strut\textbf{Prasminiai žodžiai:} Android, vietinės bibliotekos, PLT perėmimas, \texttt{dlopen}, {\texttt{\textunderscore\textunderscore loader\_dlopen}}, ELF, šifravimas, \texttt{memfd}, dinaminis susiejimas, ByteHook.\strut
 }}
 
 \endgroup
@@ -495,20 +495,21 @@ Author \textbf{Elvinas Žukauskas} \hfill Supervisor \textbf{Assoc.\ Prof.\ Dr.\
 \fbox{\parbox{\dimexpr\textwidth-2\fboxsep-2\fboxrule}{%
 \strut\textbf{Annotation}\par\vspace{0.3em}
 \setlength{\parindent}{1.5em}
-\indent This bachelor's thesis examines the protection of Android native libraries using runtime decryption and native call hooking mechanisms. The theoretical part analyzes Android native library loading mechanisms, ELF dynamic linking structures, and interception techniques including inline patching, PLT/GOT table modification, library interposition, and loader entry point interception. Existing Android hooking frameworks, Frida, LSPosed, and ByteHook, are compared for their suitability for intercepting native library loading without requiring system privileges. In the practical part, a proof-of-concept protection solution was designed and implemented using PLT-based interception through the ByteHook library. The system encrypts selected native libraries with an XOR cipher at build time and intercepts \texttt{\_\_loader\_dlopen} function calls at runtime, decrypts protected libraries in memory using \texttt{memfd\_create}, and loads them through the \texttt{android\_dlopen\_ext} interface. The solution was tested on a Google Pixel~9 device running Android~16 (API level~36). Fifteen system tests confirmed correct interception behaviour, cold start overhead below 15\,ms, and per-call passthrough overhead below 50\,$\mu$s. The results demonstrated that PLT-based interception can transparently handle native-to-native library loading scenarios that are not addressed by Java-level hooking mechanisms.\par
-\vspace{0.4em}
+\indent This bachelor's thesis explores the protection of Android native libraries in scenarios where one library loads another, bypassing the Java layer. Because the operating system's Java layer is incapable of hooking and monitoring native library loading calls, a runtime Procedure Linkage Table (PLT) hooking system was developed specifically to address this issue. The theoretical part explores native library loading mechanisms, the ELF binary format, and PLT hooking. It also provides an analysis of the Frida, LSPosed, and ByteHook frameworks, with a primary focus on their ability to function within a standard application process without requiring elevated privileges from the system. ByteHook was selected as a suitable tool, as it meets these requirements and is proven to be production-ready. In the practical part, a proof-of-concept architectural solution was designed and implemented. Native libraries are encrypted during compilation. During application startup, a PLT hook is initialized, redirecting native library loading calls to a custom proxy function. Within this proxy function, the encrypted library is loaded directly into memory, decrypted in place, transferred to an anonymous file descriptor, and finally mapped into the process. The developed system was tested on a Google Pixel 9 device running Android 16 (API level 36). Fifteen tests confirmed that the mechanism transparently processes unprotected libraries while successfully decrypting and loading protected ones. The results demonstrate that PLT hooking is a feasible approach for capturing native library load requests on the reference device, thereby supporting their protection in cases where they are loaded directly from a different native library.\par
+\vspace{1em}
 \setlength{\parindent}{0pt}
-The thesis consists of 6 parts: introduction, analysis of relevant technologies, system specification, system implementation, system testing, and conclusions.\par
+The thesis consists of 6 parts: introduction, analysis of relevant technologies, system specification, system implementation, conclusions, and references.\par
 \vspace{0.2em}
 % NOTE: verify page count after compilation and adjust if needed
-The thesis consists of 45 pages of text with appendices, 13 figures, 7 tables, and 16 bibliographic sources.\strut
+The thesis consists of 56 pages of text with appendices, 13 figures, 7 tables, and 18 bibliographic sources.\strut
 }}
 
 \vspace{0.5cm}
 
 \noindent
 \fbox{\parbox{\dimexpr\textwidth-2\fboxsep-2\fboxrule}{%
-\strut\textbf{Keywords:} Android, native libraries, PLT hooking, encryption, memfd, dynamic linking, ByteHook.\strut
+\hyphenpenalty=10000\exhyphenpenalty=10000%
+\strut\textbf{Keywords:} Android, native libraries, PLT hooking, \texttt{dlopen}, {\texttt{\textunderscore\textunderscore loader\_dlopen}}, ELF, encryption, \texttt{memfd}, dynamic linking, ByteHook.\strut
 }}
 
 \endgroup
@@ -518,10 +519,14 @@ The thesis consists of 45 pages of text with appendices, 13 figures, 7 tables, a
 % Switch to main document formatting for subsequent pages
 \pagestyle{plain}
 \pagenumbering{arabic}
-\setcounter{page}{5}  % Pages: title(1), approval(2), task(3), annotation LT(4), annotation EN(5), TOC starts here
+\setcounter{page}{6}  % Pages: title(1), approval(2), task(3), annotation LT(4), annotation EN(5), TOC starts at 6
 
 \setcounter{tocdepth}{3}
+{% Compact ToC: tighter line spacing and reduced gap between entries
+\setstretch{1.45}%
+\setlength{\parskip}{1pt}%
 \tableofcontents
+}
 \newpage
 
 \listoffigures
@@ -533,8 +538,8 @@ The thesis consists of 45 pages of text with appendices, 13 figures, 7 tables, a
 % ============================================================================
 % LIST OF ABBREVIATIONS
 % ============================================================================
-\section*{List of Abbreviations}
-\addcontentsline{toc}{section}{List of Abbreviations}
+\section*{List of abbreviations}
+\addcontentsline{toc}{section}{List of abbreviations}
 
 \begin{tabular}{@{}l l@{}}
     ABI   & Application Binary Interface \\
@@ -584,7 +589,7 @@ The thesis consists of 45 pages of text with appendices, 13 figures, 7 tables, a
 % ============================================================================
 % MAIN CONTENT
 % ============================================================================
-\section{Analysis and Overview of Relevant Technologies}
+\section{Analysis and overview of relevant technologies}
 
 Android provides the runtime environment in which the proof-of-concept system operates.  It manages hardware access, memory, process isolation, and security for every installed application.  Developers typically target Android through the Software Development Kit (SDK), which supplies high-level APIs for user interfaces, data management, and system-service interaction across different devices and OS versions.
 
@@ -594,8 +599,8 @@ Hooking (function interception) is the technique of redirecting control flow at 
 
 Encryption transforms data into an unreadable form, and decryption reverses the transformation when the correct key is available.  Applied to native libraries, encryption can ensure that an \texttt{.so} file stored on disk is useless to an attacker who lacks the key.  Combined with controlled interception of the loading path, encrypted libraries can be restored to a loadable state only at the moment they are needed, within the memory of the authorised process.
 
-\subsection{Android Platform}
-\subsubsection{Platform Architecture}
+\subsection{Android platform}
+\subsubsection{Platform architecture}
 
 As shown in \cref{fig:android_software_stack}, Android is structured as a layered software stack built on a modified Linux kernel. The kernel provides essential system services, such as process and memory management, drivers, networking, and security mechanisms. \cite{android_platform}
 
@@ -608,13 +613,13 @@ As shown in \cref{fig:android_software_stack}, Android is structured as a layere
 
 Above the kernel is the Hardware Abstraction Layer (HAL), which defines standardized interfaces that enable higher layers of the system to communicate with device-specific hardware components. The next layer consists of native C/C++ libraries and the Android Runtime (ART). These native libraries provide system-level functionality for areas such as graphics, media, and databases. ART executes application bytecode and is responsible for ahead-of-time (AOT) and just-in-time (JIT) compilation, garbage collection, and debugging support. On top of this layer is the Java application programming interface (API) framework, which exposes system features to applications through objects, services, and APIs. This layer simplifies access to device capabilities and system services for application developers. The highest layer contains applications, including both system-installed and user-installed apps. Each application runs in its own process and interacts with the Java API framework to utilize the underlying system functionality. \cite{android_platform}
 
-\subsubsection{Native Libraries in Android}
+\subsubsection{Native libraries in Android}
 
 Native libraries in Android are shared C/C++ libraries compiled into \texttt{.so} files. They extend application functionality beyond the Java or Kotlin layer, enabling performance critical operations and access to low level system features. These libraries are packaged inside the application under the \texttt{lib/<ABI>/} directories, with separate binaries for each supported processor architecture, such as \texttt{armeabi-v7a}, \texttt{arm64-v8a}, or \texttt{x86\_64}.
 
 Native code interacts with the managed environment through the Java Native Interface (JNI). JNI is a standardized framework that enables interoperability between managed Java code and unmanaged native code written in C or C++. It allows Java applications to invoke native functions for performance critical tasks, system level operations, or to reuse existing native codebases. It also permits native code to call back into Java, creating a bidirectional communication channel between the Android Runtime (ART) and compiled native libraries.
 
-A typical JNI workflow is illustrated in \cref{fig:jni_workflow_mermaid}. At a high level, the application declares one or more methods as \texttt{native} in the Java or Kotlin layer, requests loading of the corresponding shared library via \texttt{System.loadLibrary()}, and relies on ART and JNI to bind these declarations to concrete functions in the native library. After the library is loaded, calls from managed code to the native methods are routed through the JNI bridge to the compiled C or C++ implementation, which can then interact with Java objects through the \texttt{JNIEnv*} interface and return data back to the managed layer.
+A typical JNI workflow is illustrated in \cref{fig:jni_workflow_mermaid}. At a high level, the application declares one or more methods as \texttt{native} in the Java or Kotlin layer, requests loading of the corresponding shared library via \linebreak \texttt{System.loadLibrary()}, and relies on ART and JNI to bind these declarations to concrete functions in the native library. After the library is loaded, calls from managed code to the native methods are routed through the JNI bridge to the compiled C or C++ implementation, which can then interact with Java objects through the \texttt{JNIEnv*} interface and return data back to the managed layer.
 
 \begin{figure}[p]
     \centering
@@ -625,7 +630,7 @@ A typical JNI workflow is illustrated in \cref{fig:jni_workflow_mermaid}. At a h
 
 The \texttt{JNIEnv*} interface exposed to native code provides access to the managed environment, including operations such as creating new Java strings, invoking Java methods, or managing exceptions. JNI therefore serves as the fundamental bridge between Android managed and native layers, allowing developers to balance execution speed, resource control, and portability when building hybrid applications that combine both Java and C/C++ code.
 
-\subsubsection{ELF Format and Dynamic Linking on Android}
+\subsubsection{ELF format and dynamic linking on Android}
 
 Android native libraries are distributed as shared objects with the \texttt{.so} extension. These binaries follow the Executable and Linkable Format (ELF), which is the standard binary format for Linux based systems, including Android. ELF defines how code, data, and metadata are organized so that the operating system and the dynamic linker can map the library into memory and resolve its dependencies at runtime \cite{xinuos2025elf}.
 
@@ -646,9 +651,9 @@ After mapping segments and applying relocations, the loader executes any registe
 
 Modern versions of Android also enforce linker namespaces. A namespace defines which libraries are visible to a given loading context and which symbols can be resolved across boundaries. Application code, system libraries, and vendor components may reside in separate namespaces. This separation limits access to private system interfaces and prevents accidental or unauthorized linking against internal libraries. It also means that two libraries with the same filename can coexist in different namespaces, and it affects whether repeated loading of the same \texttt{.so} is permitted under different class loaders.
 
-In summary, the ELF format provides the structural basis for how Android represents native code, and the dynamic linker is responsible for locating dependencies, applying relocations, resolving symbols through PLT and GOT, and invoking initialization code. These mechanisms are also the points at which native level interception can observe or redirect operations such as \texttt{dlopen()}, symbol resolution, or library initialization. This makes ELF level behavior directly relevant to runtime decryption and controlled loading of protected libraries \cite{xinuos2025elf,ronin2018hooking,bleier2023oat}.
+In summary, the ELF format provides the structural basis for how Android represents native code, and the dynamic linker is responsible for locating dependencies, applying relocations, resolving symbols through PLT and GOT, and invoking initialization code. These mechanisms are also the points at which native level interception can observe or redirect operations such as \texttt{dlopen()}, symbol resolution, or library initialization. This makes ELF level behaviour directly relevant to runtime decryption and controlled loading of protected libraries \cite{xinuos2025elf,ronin2018hooking,bleier2023oat}.
 
-\subsubsection{Library Loading Mechanisms}
+\subsubsection{Library loading mechanisms}
 
 Android provides multiple ways to load native libraries at runtime. The most common method is Java-based loading through \texttt{System.load()} and \texttt{System.loadLibrary()}, which delegate the work to the Android Runtime (ART) and the process linker (the bionic linker). These functions locate, validate, map, and initialize the requested shared object (\texttt{.so}) file.
 
@@ -667,48 +672,48 @@ In addition to Java-based loading, libraries can also be loaded directly from na
     \label{fig:android_lib_load_flow}
 \end{figure}
 
-\subsection{Hooking and Interception Techniques}
-\subsubsection{Java-level Hooking Methods}
+\subsection{Hooking and interception techniques}
+\subsubsection{Java-level hooking methods}
 
 Java-level hooking focuses on intercepting method calls at the managed code layer. It targets Android framework or application methods that execute in ART or a Java Virtual Machine (JVM)-like environment \cite{android_platform}.
 
-One practical approach is method replacement through reflection. Using the \texttt{java.lang.reflect} API, private or system methods can be accessed, their accessibility modified, and their behavior overridden at runtime. This enables selective interception without repackaging the application.
+One practical approach is method replacement through reflection. Using the \texttt{java.lang.reflect} API, private or system methods can be accessed, their accessibility modified, and their behaviour overridden at runtime. This enables selective interception without repackaging the application.
 
-Instrumentation frameworks such as Xposed~\cite{xposed2013framework} load a hook manager early in process startup and register handlers that run before or after targeted Java methods. In practice, a modified Zygote injects the Xposed bridge so modules can intercept framework and application APIs, substitute return values, and record arguments. Research systems extend this model to configurable monitors (e.g., Droidmon/ARTmon) that hook framework APIs and even mask environment fingerprints during analysis \cite{kumar2023inviseal}. Java-layer tools like Frida~\cite{frida2023official} can also attach to a running process and modify Java method behavior dynamically without prior application modification.
+Instrumentation frameworks such as Xposed~\cite{xposed2013framework} load a hook manager early in process startup and register handlers that run before or after targeted Java methods. In practice, a modified Zygote injects the Xposed bridge so modules can intercept framework and application APIs, substitute return values, and record arguments. Research systems extend this model to configurable monitors (e.g., Droidmon/ARTmon) that hook framework APIs and even mask environment fingerprints during analysis \cite{kumar2023inviseal}. Java-layer tools like Frida~\cite{frida2023official} can also attach to a running process and modify Java method behaviour dynamically without prior application modification.
 
 A key limitation of Java-level hooking is that it does not observe native-only execution. Java hooks cannot directly intercept native library loading through \texttt{dlopen()} or calls resolved purely in the dynamic linker. Anti-tamper checks may also detect injected managers or altered method paths, and modern policies constrain deployment on stock devices. Moreover, the compilation pipeline of ART (AOT/JIT) and the presence of native code in applications reinforce the boundary between managed and native execution, which motivates native-layer interception \cite{bleier2023oat,kumar2023inviseal,ronin2018hooking}.
 
-\subsubsection{Native-level Hooking}
+\subsubsection{Native-level hooking}
 
 Native-level hooking intercepts compiled C/C++ execution and dynamic linking. It provides broader coverage, including system libraries and loader paths, at the cost of increased complexity \cite{ronin2018hooking}. In practice, native hooks can be implemented using several technique families, including inline patching of function prologues, PLT and Global Offset Table (GOT) based redirection, library interposition through load order control, and direct interception of loader entry points such as \texttt{dlopen()} and \texttt{dlsym()} \cite{ronin2018hooking,kumar2023inviseal}. Library interposition and direct loader entry interception are briefly described below but are not examined in detail, as \texttt{LD\_PRELOAD} semantics are constrained by Android's linker namespaces and application sandboxing, and loader-level modification requires system-wide privileges outside the single-application scope of this work. The two techniques most directly applicable to user-space function-level interception in this context, inline hooking and PLT-based hooking, are discussed in detail in the following subsubsections.
 
-\textbf{Library interposition.} This method replaces exported symbols by ensuring a custom library is loaded before the target. On Android, traditional \texttt{LD\_PRELOAD} is constrained by linker namespaces and application sandboxing. Effective interposition often relies on early injection, custom loader hooks, or process-specific load order control \cite{ronin2018hooking}. Research frameworks combine Java-layer hooks with operating system-level controls to reduce detectability while observing cross-layer behavior \cite{kumar2023inviseal}.
+\textbf{Library interposition.} This method replaces exported symbols by ensuring a custom library is loaded before the target. On Android, traditional \texttt{LD\_PRELOAD} is constrained by linker namespaces and application sandboxing. Effective interposition often relies on early injection, custom loader hooks, or process-specific load order control \cite{ronin2018hooking}. Research frameworks combine Java-layer hooks with operating system-level controls to reduce detectability while observing cross-layer behaviour \cite{kumar2023inviseal}.
 
-\textbf{Intercepting native loading.} Hooking \texttt{dlopen()} and related loader entry points allows observing, blocking, or replacing libraries as they map and relocate. This is essential when decrypting or unpacking protected libraries before use. Implementations must account for Android linker behavior, namespaces, and ART interactions \cite{ronin2018hooking,bleier2023oat}.
+\textbf{Intercepting native loading.} Hooking \texttt{dlopen()} and related loader entry points allows observing, blocking, or replacing libraries as they map and relocate. This is essential when decrypting or unpacking protected libraries before use. Implementations must account for Android linker behaviour, namespaces, and ART interactions \cite{ronin2018hooking,bleier2023oat}.
 
 \textbf{Protections and detection.} Effective native hooks must handle Address Space Layout Randomization (ASLR), Security-Enhanced Linux (SELinux) constraints, and application integrity checks. Many applications verify code sections or loader state and may probe for modified tables or suspicious mappings. Analysis systems mitigate this by minimizing overhead, targeting hooks precisely, and correlating framework- and operating system-level signals \cite{kumar2023inviseal,ronin2018hooking}.
 
-\subsubsection{Inline Hooking Techniques}
+\subsubsection{Inline hooking techniques}
 
 Inline hooking modifies instructions at the beginning of a function in order to redirect control flow to a custom handler before optionally returning to the original implementation. The typical pattern is to overwrite the function prologue with a branch instruction that jumps to a trampoline, which saves register state, executes custom logic, and then either calls the original function body or bypasses it completely. Because the overwritten instructions are lost when the branch is written, they must be relocated into the trampoline in a way that preserves original semantics, including correct handling of relative addresses and literal pools \cite{ronin2018hooking}.
 
 On Android, inline hooks must account for the instruction set and calling conventions of the underlying CPU architecture. Historically, devices have used both ARM and Thumb instruction sets for 32 bit binaries, while modern devices predominantly use AArch64. Hooking frameworks therefore need to detect the current instruction mode, choose an appropriate branch encoding, and ensure that the trampoline is correctly aligned and resides in executable memory \cite{ronin2018hooking,kumar2023inviseal}. In environments with Address Space Layout Randomization (ASLR), the framework must compute target addresses at runtime rather than relying on fixed offsets.
 
-Inline hooking has the advantage that it can target functions even when they are not exported through the dynamic symbol table. As long as the function address is known, either from static analysis or from in process symbol resolution, its prologue can be patched. This makes inline hooks suitable for intercepting internal helper functions or decryption routines that are deliberately hidden from the dynamic linker. At the same time, modifying code sections increases the risk of detection and instability, especially in applications that perform integrity checks on executable pages, verify code signatures, or rely on control flow integrity protections \cite{ronin2018hooking,kumar2023inviseal}. For these reasons, inline hooking is often combined with more conservative techniques such as PLT based redirection when observable behavior must remain as close as possible to the unmodified application.
+Inline hooking has the advantage that it can target functions even when they are not exported through the dynamic symbol table. As long as the function address is known, either from static analysis or from in process symbol resolution, its prologue can be patched. This makes inline hooks suitable for intercepting internal helper functions or decryption routines that are deliberately hidden from the dynamic linker. At the same time, modifying code sections increases the risk of detection and instability, especially in applications that perform integrity checks on executable pages, verify code signatures, or rely on control flow integrity protections \cite{ronin2018hooking,kumar2023inviseal}. For these reasons, inline hooking is often combined with more conservative techniques such as PLT based redirection when observable behaviour must remain as close as possible to the unmodified application.
 
-\subsubsection{PLT-based Hooking Techniques}
+\subsubsection{PLT-based hooking techniques}
 
 PLT based hooking focuses on function calls that are resolved by the dynamic linker rather than patching instruction streams directly. In ELF based binaries, calls to external functions such as \texttt{dlopen()}, file I/O routines, or cryptographic APIs are compiled as indirect jumps through the Procedure Linkage Table. At runtime, the dynamic linker populates the corresponding entries in the Global Offset Table with the true target addresses. Once relocation is complete, every call through a PLT stub reads the function address from the GOT and branches to it. By modifying these GOT entries after they have been resolved, a hook can redirect all subsequent calls to a proxy implementation that executes custom logic before optionally delegating to the original function \cite{xinuos2025elf,ronin2018hooking}.
 
 In contrast to inline patching, PLT based hooks operate entirely on data structures that the dynamic linker already manages. They do not require rewriting instructions in executable segments, which improves robustness across compiler optimizations and reduces the risk of violating code integrity checks. Hook implementations must still locate the relevant relocation entries, identify which GOT slots correspond to the targeted symbol, and update them atomically to avoid race conditions. Modern frameworks automate this process and also monitor newly loaded shared objects so that hooks are applied consistently as the set of loaded modules changes during execution \cite{ronin2018hooking,pizzi2022virtualpatch}.
 
-For intercepting native library loading, PLT based techniques are particularly attractive. By targeting symbols such as \texttt{dlopen()} or \texttt{android\_dlopen\_ext()} in the process, a hook can observe every attempt to load a shared library, validate paths and flags, and transparently decrypt or unwrap protected binaries before forwarding the call. Because all callers of the symbol that resolve through the PLT share the same GOT entries, a single hook can cover multiple libraries and engine layers, which is beneficial in complex applications that embed several runtimes or plugin systems \cite{ronin2018hooking,pizzi2022virtualpatch}.
+For intercepting native library loading, PLT based techniques are particularly attractive. By targeting symbols such as \texttt{dlopen()} that are called from multiple libraries, a hook can observe loading attempts, validate paths and flags, and transparently decrypt or unwrap protected binaries before forwarding the call. Because all callers of the symbol that resolve through the PLT share the same GOT entries, a single hook can cover multiple libraries and engine layers, which is beneficial in complex applications that embed several runtimes or plugin systems \cite{ronin2018hooking,pizzi2022virtualpatch}. Other loading entry points, such as \texttt{android\_dlopen\_ext()}, would require separate hooks on their corresponding internal loader symbols.
 
-\subsection{Android Hooking Frameworks}
+\subsection{Android hooking frameworks}
 
-\subsubsection{Frida-based Hooking}
+\subsubsection{Frida-based hooking}
 
-Frida is a dynamic instrumentation toolkit that allows developers, reverse engineers, and security researchers to observe and modify the behavior of applications at runtime on multiple platforms, including Android \cite{frida2023official}. In contrast to purely static patching, Frida injects a lightweight runtime into a live process and evaluates user supplied scripts that describe which functions to intercept and how to modify them. This model is well suited for exploratory analysis, rapid prototyping of hooks, and building custom monitoring tools without repackaging the target application.
+Frida is a dynamic instrumentation toolkit that allows developers, reverse engineers, and security researchers to observe and modify the behaviour of applications at runtime on multiple platforms, including Android \cite{frida2023official}. In contrast to purely static patching, Frida injects a lightweight runtime into a live process and evaluates user supplied scripts that describe which functions to intercept and how to modify them. This model is well suited for exploratory analysis, rapid prototyping of hooks, and building custom monitoring tools without repackaging the target application.
 
 On Android, Frida can operate in several configurations. On rooted devices, a \textit{frida-server} binary runs with sufficient privileges to attach to application processes and inject the Frida core. On non rooted devices, Frida can be embedded directly into an application or test harness through a special \textit{gadget} library that is loaded by the application. In both cases, the core component exposes an API to the external Frida client, which uploads and evaluates JavaScript based instrumentation logic inside the target process. This separation between transport and scripting makes it possible to iteratively refine hooks while the application is running \cite{frida2023official}.
 
@@ -716,11 +721,11 @@ Frida supports Java level instrumentation by interacting with the Android Runtim
 
 In addition to Java methods, Frida exposes native level interception primitives that target compiled code in shared libraries. The most commonly used mechanism is attaching to a function address with an interceptor. A script can identify functions either by symbol name through module exports, such as \texttt{dlopen} or cryptographic routines, or by absolute address within a loaded module. Once attached, the hook receives callbacks on every function entry and exit, with access to register values and arguments. The script can then log or modify parameters, alter return values, or redirect control flow, which effectively implements inline hooks without manual patching of instruction bytes \cite{ronin2018hooking}.
 
-Because Frida can observe both Java and native layers in the same process, it is particularly suitable for studying cross layer behavior such as native library loading. A typical pattern is to hook Java calls that request loading of a library and, in parallel, intercept the corresponding native \texttt{dlopen()} and \texttt{dlsym()} calls. This allows the analyst to correlate library names, file system paths, and resolved symbol addresses, and to verify when a protected library is mapped into memory. In scenarios where libraries are encrypted or unpacked at runtime, Frida scripts can target the decryption routines directly, dump decrypted code from memory, or delay execution until specific conditions are met \cite{ronin2018hooking,kumar2023inviseal}.
+Because Frida can observe both Java and native layers in the same process, it is particularly suitable for studying cross layer behaviour such as native library loading. A typical pattern is to hook Java calls that request loading of a library and, in parallel, intercept the corresponding native \texttt{dlopen()} and \texttt{dlsym()} calls. This allows the analyst to correlate library names, file system paths, and resolved symbol addresses, and to verify when a protected library is mapped into memory. In scenarios where libraries are encrypted or unpacked at runtime, Frida scripts can target the decryption routines directly, dump decrypted code from memory, or delay execution until specific conditions are met \cite{ronin2018hooking,kumar2023inviseal}.
 
 Despite its flexibility, Frida is primarily designed as an analysis and instrumentation tool rather than a production protection mechanism. The presence of the Frida core, its communication channels, and injected scripts can be detected by applications that perform integrity checks on process memory, open file descriptors, or loaded modules. Furthermore, Frida hooks are typically established from an external controller and are not persisted across application restarts without additional packaging. For the purposes of this thesis, Frida therefore serves mainly as a reference implementation and experimental platform for exploring hooking strategies, including the interception of native library loading paths, rather than as a direct candidate for integrating runtime decryption into production applications.
 
-\subsubsection{LSPosed-based Hooking}
+\subsubsection{LSPosed-based hooking}
 
 LSPosed is a modern implementation of the Xposed concept for recent Android versions. It is distributed as a Riru or Zygisk module and provides an Android Runtime (ART) hooking framework with APIs that remain compatible with the original Xposed framework \cite{xposed2013framework,lsposed2025github}. Internally, LSPosed leverages components such as LSPlant for ART level method interception and Dobby for inline hooking, while relying on systemless root solutions such as Magisk or KernelSU to inject its code into the \texttt{zygote} process \cite{lsposed2025github,lsposed2025website}. By doing so, it enables Java level hooks without modifying system partitions, which improves compatibility with over the air updates and reduces the risk of permanent system corruption compared to legacy, system modifying Xposed deployments \cite{androidroot2024lsposed,promon2024hooking}.
 
@@ -728,9 +733,9 @@ From an architectural perspective, LSPosed integrates into process startup at th
 
 \textit{Module scoping and configuration.} A central feature of LSPosed is fine grained scoping of modules. Instead of applying a module globally to the entire system, LSPosed lets the user restrict each module to specific applications, user profiles, or process types. This per app scoping reduces unintended side effects, simplifies troubleshooting, and improves security, because only the targeted processes are affected by a given hook \cite{androidroot2024lsposed,promon2024hooking}. LSPosed also integrates an online repository of modules, making it easier to discover and update functionality such as ad blocking, UI customization, or privacy enhancements directly from the manager interface \cite{lsposed2025website,androidroot2024lsposed}.
 
-\textit{Platform coverage and limitations.} LSPosed is designed specifically for modern Android releases and supports versions from Android 8.1 (API 27) up to Android 16 (API 36) according to recent stable releases \cite{lsposed2025github,lsposed2025website,androidroot2024lsposed}. Because it operates as a systemless module in Magisk or KernelSU, it can typically persist across operating system updates as long as the underlying root solution remains compatible. At the same time, LSPosed is constrained to the managed layer: like the original Xposed, it hooks Java and Kotlin code running on ART and does not directly instrument native C/C++ code or the dynamic linker \cite{promon2024hooking}. Consequently, LSPosed can intercept high level calls such as \texttt{System.loadLibrary()} or security relevant framework APIs, but it cannot see native only library loading paths implemented purely with \texttt{dlopen()} and related functions in C/C++. For scenarios that require intercepting native library loading, observing ELF relocations, or decrypting libraries immediately before they are mapped, LSPosed is therefore complementary to, but not a replacement for, native level hooking techniques described elsewhere in this thesis.
+\textit{Platform coverage and limitations.} LSPosed (now continued as Vector) is designed specifically for modern Android releases and supports versions from Android 8.1 (API 27) through Android 17 Beta according to the official repository \cite{lsposed2025github}. It requires Magisk or KernelSU with Zygisk enabled \cite{lsposed2025github,lsposed2025website}. Because it operates as a systemless module, it can typically persist across operating system updates as long as the underlying root solution remains compatible. At the same time, LSPosed is constrained to the managed layer: like the original Xposed, it hooks Java and Kotlin code running on ART and does not directly instrument native C/C++ code or the dynamic linker \cite{promon2024hooking}. Consequently, LSPosed can intercept high level calls such as \texttt{System.loadLibrary()} or security relevant framework APIs, but it cannot see native only library loading paths implemented purely with \texttt{dlopen()} and related functions in C/C++. For scenarios that require intercepting native library loading, observing ELF relocations, or decrypting libraries immediately before they are mapped, LSPosed is therefore complementary to, but not a replacement for, native level hooking techniques described elsewhere in this thesis.
 
-\subsubsection{ByteHook-based PLT Hooking}
+\subsubsection{ByteHook-based PLT hooking}
 
 ByteHook is an open source Android PLT hook library developed by ByteDance. It provides a production-ready implementation of Procedure Linkage Table and Global Offset Table based hooking for native code, and is deployed in large scale applications such as TikTok, Douyin, Toutiao, Xigua Video, and Lark \cite{bytehook2025github}. In contrast to inline hook frameworks that modify instruction streams, ByteHook focuses on redirecting dynamically linked function calls by updating PLT and GOT entries at runtime. This approach aligns directly with the ELF-level linking model described earlier and avoids rewriting executable code sections, which improves portability and robustness across compiler optimizations and architectures \cite{pizzi2022virtualpatch}.
 
@@ -773,7 +778,7 @@ ByteHook was selected for this work because it provides production-grade PLT-bas
 
 This section has outlined the key technical foundations required for the proposed protection system. The Android platform was introduced as a layered software stack built on a modified Linux kernel, with native libraries packaged as ELF shared objects and exposed to applications through the Android Runtime (ART) and the Java Native Interface (JNI). The discussion of ELF structure, dynamic symbol resolution, and library loading mechanisms highlighted how the dynamic linker maps \texttt{.so} files into memory, resolves dependencies via PLT and GOT entries, and enforces class loader and namespace boundaries during \texttt{System.loadLibrary()} and \texttt{dlopen()} calls.
 
-Hooking and interception techniques were then surveyed at both the Java and native layers. Java-level methods, including reflection-based interception and ART focused frameworks such as Xposed and LSPosed, provide powerful instrumentation of managed code but cannot observe purely native loading paths or low level linker behaviour. Native-level techniques, in particular inline hooks and PLT based hooks, extend coverage to compiled C/C++ code and dynamic linking, enabling interception of functions such as \texttt{dlopen()} and \texttt{android\_dlopen\_ext()} at the point where libraries are actually mapped and initialised.
+Hooking and interception techniques were then surveyed at both the Java and native layers. Java-level methods, including reflection-based interception and ART focused frameworks such as Xposed and LSPosed, provide powerful instrumentation of managed code but cannot observe purely native loading paths or low level linker behaviour. Native-level techniques, in particular inline hooks and PLT based hooks, extend coverage to compiled C/C++ code and dynamic linking. For example, interception of \texttt{dlopen()} can be achieved at the internal dynamic linker boundary, allowing observation of native loading calls at the point where libraries are actually mapped and initialised. Other APIs such as \texttt{android\_dlopen\_ext()} that use different internal entry points would require separate hooks.
 
 Finally, representative Android hooking frameworks were reviewed. Frida illustrates a flexible, script driven approach that spans both Java and native layers and is well suited for analysis and prototyping. LSPosed demonstrates a modern, systemless evolution of Xposed that focuses on ART level method interception. ByteHook provides a production oriented implementation of PLT based hooking that operates entirely within native code and is already deployed in large scale applications. Together, these technologies motivate and enable the proof of concept system developed in this thesis, which relies on PLT based interception of native loading calls to decrypt and load protected libraries at runtime without modifying the Android platform.
 
@@ -788,7 +793,7 @@ The system developed in this thesis is a proof of concept runtime protection mec
 
 The system consists of two main parts. The first part is a build time encryption component integrated into the Android project build pipeline. This component processes compiled shared objects and replaces selected libraries with encrypted equivalents that are no longer valid ELF binaries from the operating system point of view. The resulting encrypted libraries are packaged into the APK in the standard locations for native code so that the Android installation and extraction process remains unchanged.
 
-The second part is a runtime protection component embedded into the protected application. This component initializes a native hooking mechanism during application startup and intercepts all calls to the native library loading functions in the current process, regardless of their origin. The component maintains a registry of protected library names and routes every intercepted loading request through a proxy function that performs a lookup against this registry. When the requested library is found in the protected list, the proxy locates the corresponding encrypted file on disk, decrypts its contents in memory, and loads the decrypted image into the process using an in memory file descriptor. For libraries that are not in the protected list, the proxy forwards the loading request directly to the original dynamic linker implementation without modification. This design preserves normal application behavior for unprotected components while selectively applying decryption only where needed.
+The second part is a runtime protection component embedded into the protected application. This component initializes a native hooking mechanism during application startup and intercepts PLT-resolved calls to the hooked loader symbol in the current process, regardless of their origin. The component maintains a registry of protected library names and routes each intercepted loading request through a proxy function that performs a lookup against this registry. When the requested library is found in the protected list, the proxy locates the corresponding encrypted file on disk, decrypts its contents in memory, and loads the decrypted image into the process using an in memory file descriptor. For libraries that are not in the protected list, the proxy forwards the loading request directly to the original dynamic linker implementation without modification. This design preserves normal application behaviour for unprotected components while selectively applying decryption only where needed.
 
 The scope of the system is limited to in process protection for a single Android application. The design assumes that the application can be rebuilt in order to add the build time encryption step and to link against the native protection library. The system does not attempt to provide system wide protection, cross process enforcement, or integration with hardware backed key storage. It also does not implement anti debugging or anti hooking countermeasures. Instead, the goal is to demonstrate that transparent decryption and loading of protected native libraries is feasible on stock Android devices under realistic deployment constraints.
 
@@ -803,7 +808,7 @@ The high level scope and placement of the system within the Android execution en
 
 \subsection{Operating environment and assumptions}
 
-The proposed system is designed and evaluated as an in process protection mechanism for a single Android application running on stock devices without root. It does not modify the operating system, the Android Runtime (ART), or the system linker, and relies only on APIs and behaviors available to a regular application process.
+The proposed system is designed and evaluated as an in process protection mechanism for a single Android application running on stock devices without root. It does not modify the operating system, the Android Runtime (ART), or the system linker, and relies only on APIs and behaviours available to a regular application process.
 
 The minimum platform level for which this proof of concept is specified is Android 8.0 (API level 26). This lower bound is determined by the combined requirements of the native loading and in memory execution mechanisms. The system relies on the Android specific \texttt{android\_dlopen\_ext} function with the \texttt{ANDROID\_DLEXT\_USE\_LIBRARY\_FD} flag to load decrypted libraries from a file descriptor \cite{android_ndk_dlext}, and on the \texttt{memfd\_create} syscall to obtain an anonymous in memory file. The \texttt{android\_dlopen\_ext} function with the \texttt{ANDROID\_DLEXT\_USE\_LIBRARY\_FD} flag is officially available from API level 21. The \texttt{memfd\_create} functionality is invoked directly as a raw Linux syscall via \texttt{syscall(\_\_NR\_memfd\_create, \ldots)}, bypassing the C library wrapper entirely. This syscall was introduced in Linux kernel 3.17, which is present on all devices shipping with Android 8.0 or higher. Because the implementation does not rely on the C library \texttt{memfd\_create} wrapper (which was only added in API level 30), the effective minimum is Android 8.0 (API level 26).
 
@@ -817,7 +822,7 @@ In summary, the system specification assumes an unmodified Android 8.0 (API leve
 
 \subsection{Threat model}
 
-The protection system is designed to resist a static adversary: an attacker who has obtained the APK file and attempts to extract and reverse-engineer the native libraries it contains using tools such as disassemblers, hex editors, or ELF analysis utilities. Against this adversary, the system ensures that no valid, loadable version of a protected library exists on persistent storage, so the extracted file cannot be analyzed or reused without the decryption key. The XOR cipher used in this proof of concept is intentionally simple and could be reversed by a determined attacker through brute force. The contribution of this work is the interception mechanism rather than the strength of the cipher, and the hooking layer is cipher-agnostic, meaning any stronger cipher could replace the XOR step without modifying the loading interception logic.
+The system demonstrates an interception and in-memory loading pipeline that invalidates the on-disk ELF format of protected libraries. No valid, loadable version of a protected library exists on persistent storage, preventing naive extraction attempts that expect a standard ELF binary. However, the prototype does not provide production-grade cryptographic confidentiality against a capable static adversary. The XOR cipher used is intentionally simple and transparent, avoiding obscuration of the core contribution: the hooking mechanism itself. Critically, the encryption key is hardcoded in the native code and can be recovered through reverse engineering. Once the key is known, decrypting the on-disk files requires only applying the byte-wise XOR operation. For this reason, the system should not be construed as protecting confidentiality of the native code against a sophisticated reverse engineer. The contribution of this work is the interception mechanism and in-memory loading architecture rather than cryptographic strength, and the hooking layer is cipher-agnostic, meaning any production-grade cipher and key management solution could replace the XOR step without modifying the loading interception logic.
 
 Several attack scenarios are explicitly outside the scope of this proof of concept. An attacker who attaches a debugger or reads process memory after the library has been decrypted and loaded is not addressed. An attacker with root access who uses tools such as \texttt{ptrace} or \texttt{/proc/<pid>/mem} to dump the decrypted image at runtime is also out of scope. The same applies to any kernel-level or hypervisor-level attacker. These limitations are acknowledged in the security discussion in \cref{sec:security_implications} and are identified as areas for future hardening.
 
@@ -826,7 +831,7 @@ Several attack scenarios are explicitly outside the scope of this proof of conce
 \subsubsection{Functional requirements}
 
 {\setstretch{1}%
-\begin{longtable}{|p{0.06\textwidth}|p{0.12\textwidth}|p{0.19\textwidth}|p{0.08\textwidth}|p{0.42\textwidth}|}
+\begin{longtable}{|p{0.06\textwidth}|p{0.15\textwidth}|p{0.16\textwidth}|p{0.08\textwidth}|p{0.42\textwidth}|}
     \caption{Functional requirements} \label{tab:functional_requirements} \\
     \hline
     \textbf{ID} & \textbf{Type} & \textbf{Name} & \textbf{Priority} & \textbf{Description} \\
@@ -881,7 +886,7 @@ Several attack scenarios are explicitly outside the scope of this proof of conce
 \subsubsection{Non functional requirements}
 
 {\setstretch{1}%
-\begin{longtable}{|p{0.06\textwidth}|p{0.12\textwidth}|p{0.19\textwidth}|p{0.08\textwidth}|p{0.42\textwidth}|}
+\begin{longtable}{|p{0.06\textwidth}|p{0.15\textwidth}|p{0.16\textwidth}|p{0.08\textwidth}|p{0.42\textwidth}|}
     \caption{Non functional requirements} \label{tab:nonfunctional_requirements} \\
     \hline
     \textbf{ID} & \textbf{Type} & \textbf{Name} & \textbf{Priority} & \textbf{Description} \\
@@ -939,7 +944,7 @@ Several attack scenarios are explicitly outside the scope of this proof of conce
 
 \subsection{Summary of the system specification}
 
-In summary, the specified system pairs a build-time encryption step with a runtime interception component.  At build time, a post-build script XOR-encrypts chosen \texttt{.so} files in place, producing invalid ELF binaries that ship inside the APK at the standard native library locations.  At runtime, a PLT-based hook on \texttt{\_\_loader\_dlopen} intercepts every native library load, consults a registry of protected filenames, and either forwards unprotected requests to the original loader or diverts protected ones through an in-memory decrypt-validate-load path backed by \texttt{memfd\_create} and \texttt{android\_dlopen\_ext()}.
+In summary, the specified system pairs a build-time encryption step with a runtime interception component.  At build time, a post-build script XOR-encrypts chosen \texttt{.so} files in place, producing ELF binaries that are invalid as directly loadable files and ship inside the APK at the standard native library locations.  At runtime, a PLT-based hook on \linebreak \texttt{\_\_loader\_dlopen} intercepts PLT-resolved \texttt{dlopen()} calls, consults a registry of protected filenames, and either forwards unprotected requests to the original loader or diverts protected ones through an in-memory decrypt-validate-load path backed by \texttt{memfd\_create} and \texttt{android\_dlopen\_ext()}.
 
 The target platform is ARM-based Android 8.0+ (API~26) with an unmodified stock OS, a rebuildable application, and the \texttt{android:extractNativeLibs="true"} manifest flag.  Functional requirements cover build-time encryption validity, transparent interception of nested native-to-native loads, and strict fail-safe behaviour.  Non-functional requirements bound startup overhead and mandate reproducible builds.  Security requirements stipulate that no plaintext protected library may exist on persistent storage, that decrypted content must remain confined to process memory, and that the interception logic must be independent of any specific cipher so that cryptographic strength can be upgraded without redesigning the loading pipeline.
 
@@ -987,7 +992,7 @@ Six logical components make up the system.
 \begin{figure}[p]
     \centering
     \includegraphics[width=1\textwidth]{images/class_diagram.png}
-    \caption{Class diagram of the protection system, showing the relationships between Java and native modules.}
+    \caption{Class diagram of the protection system.}
     \label{fig:class_diagram}
 \end{figure}
 
@@ -999,6 +1004,7 @@ The pipeline spans both stages:
     \item \textbf{Build-time transformation.}
     The NDK toolchain compiles native libraries normally.  Afterwards, the encryption script overwrites the target library (\texttt{liblibb.so}, labelled \texttt{lib\_b.so} in diagrams) with its XOR-encrypted form, destroying the ELF header and rendering the file unloadable by the default linker.
 
+    \newpage
     \item \textbf{Process startup and hook activation.}
     The Java bootstrap loads \texttt{libnativecallhook.so} early.  Its ELF constructor installs the PLT hook during the \texttt{System.loadLibrary()} call, before control returns to the JVM.
 
@@ -1047,7 +1053,7 @@ Before packaging, selected native libraries are encrypted so they cannot be mapp
 
 \subsubsection{Encryption tool design and implementation}
 
-The encryption tool is a Python script (\texttt{encrypt\_lib.py}) placed alongside the native sources in \texttt{app/src/main/cpp}. CMake invokes it automatically as a post-build step on every incremental or clean build.
+The encryption tool is a Python script (\texttt{encrypt\_lib.py}) placed alongside the native sources in \linebreak \texttt{app/src/main/cpp}. CMake invokes it automatically as a post-build step on every incremental or clean build.
 
 A byte-level XOR cipher was chosen deliberately for this prototype. XOR keeps the encryption and decryption code trivial (a single loop over a byte array), which avoids obscuring the more novel contribution of the thesis: the interception, routing, and in-memory loading pipeline. The key, \texttt{0x69}, is a compile-time constant shared between the script and \texttt{nativecallhook.cpp}. In production, this would be replaced with a proper cipher and externalized key management, but here it is sufficient to invalidate the on-disk ELF.
 
@@ -1081,7 +1087,7 @@ Because the file is encrypted in place, the Gradle packaging stage simply collec
 
 \subsection{Runtime hook initialization}
 
-Hooks must be active before any protected library is requested. On Android, Java code can call \texttt{System.loadLibrary()} at arbitrary points after class loading, so the interception logic needs a launch point that is guaranteed to fire earlier. ELF constructor functions, which the bionic linker executes immediately after mapping a shared object and before returning control to the caller, satisfy this requirement.
+Hooks must be active before any protected library is requested. On Android, Java code can call \linebreak \texttt{System.loadLibrary()} at arbitrary points after class loading, so the interception logic needs a launch point that is guaranteed to fire earlier. ELF constructor functions, which the bionic linker executes immediately after mapping a shared object and before returning control to the caller, satisfy this requirement.
 
 \subsubsection{C++ constructor attribute and execution timing}
 
@@ -1132,7 +1138,7 @@ If the return value signals failure (non-zero), the constructor logs the error a
 
 \subsubsection{Hook installation on the loader entry point}
 
-After ByteHook is ready, \texttt{init\_hook()} installs the interception on \texttt{\_\_loader\_dlopen}, an internal bionic symbol that backs both \texttt{dlopen()} and \texttt{android\_dlopen\_ext()}.  Hooking at this depth, rather than at the public \texttt{dlopen()} wrapper, captures loads that bypass the public API.
+After ByteHook is ready, \texttt{init\_hook()} installs the interception on \texttt{\_\_loader\_dlopen}, an internal bionic symbol that backs calls to \texttt{dlopen()} \cite{aosp_bionic_libdl}.  Hooking at this internal entry point, rather than at the public \texttt{dlopen()} wrapper, captures loads that bypass higher-level APIs and are initiated directly from native code.  Note that \texttt{android\_dlopen\_ext()} calls are routed through a separate internal symbol \texttt{\_\_loader\_android\_dlopen\_ext} \cite{aosp_bionic_libdl}.  The proof of concept demonstrates interception of \texttt{dlopen()}-based native-to-native loading. Supporting \texttt{android\_dlopen\_ext()} as well would require hooking the additional symbol alongside \texttt{\_\_loader\_dlopen}, which can be done in the same \texttt{init\_hook()} function using a second \texttt{bytehook\_hook\_all()} call.
 
 The call \texttt{bytehook\_hook\_all(nullptr, "\_\_loader\_dlopen", (void*)hooked\_dlopen, nullptr, nullptr)} instructs ByteHook to patch every PLT entry referencing \texttt{\_\_loader\_dlopen} across all loaded modules.  The first \texttt{nullptr} indicates that no specific callee library is specified, so ByteHook will match \texttt{\_\_loader\_dlopen} regardless of which library exports it.  The replacement target is the callback \texttt{hooked\_dlopen()}, which is described in \cref{sec:routing}.  The two trailing \texttt{nullptr} arguments disable the optional event callback and user-data pointer, neither of which is needed here.
 
@@ -1145,13 +1151,13 @@ Every native \texttt{dlopen()} call now passes through \texttt{hooked\_dlopen()}
 
 \subsubsection{Registry implementation}
 
-A static \texttt{const char*} array named \texttt{ENCRYPTED\_LIBS} in \texttt{nativecallhook.cpp} lists the protected filenames.  In the prototype, the sole entry is \texttt{"liblibb.so"}.  Hardcoding simplifies the proof of concept but means that each change requires recompilation (a limitation discussed in \cref{sec:routing_limits}). Adding a new library to the protected set requires exactly two source-level changes, satisfying NFR4: a new entry in the \texttt{ENCRYPTED\_LIBS} array in \texttt{nativecallhook.cpp}, and a corresponding \texttt{add\_custom\_command} block in the application's \texttt{CMakeLists.txt}.
+A static \texttt{const char*} array named \texttt{ENCRYPTED\_LIBS} in \texttt{nativecallhook.cpp} lists the protected filenames.  In the prototype, the sole entry is \texttt{"liblibb.so"}.  Hardcoding simplifies the proof of concept but means that each change requires recompilation (a limitation discussed in \cref{sec:routing_limits}). Adding a new library to the protected set requires exactly two source-level changes, satisfying NFR4: a new entry in the \linebreak \texttt{ENCRYPTED\_LIBS} array in \texttt{nativecallhook.cpp}, and a corresponding \texttt{add\_custom\_command} block in the application's \texttt{CMakeLists.txt}.
 
 \subsubsection{Routing decision}
 
 \texttt{hooked\_dlopen()} calls \texttt{is\_encrypted\_library()}, which scans \texttt{ENCRYPTED\_LIBS} with \texttt{strstr()}.  Substring matching was chosen because the dynamic linker may supply the library name as a bare filename, a relative path, or an absolute path, and \texttt{strstr()} covers all three forms without path normalization.
 
-When a match is found, \texttt{get\_library\_full\_path()} resolves the on-disk location by invoking \texttt{dladdr()} on the calling library to discover the extracted-libraries directory, and passes the result to \texttt{load\_decrypted\_library()}.  When no match is found, \texttt{BYTEHOOK\_CALL\_PREV} forwards the request to the original \texttt{\_\_loader\_dlopen}, giving unprotected libraries zero additional overhead.  The registry check and routing callback are shown in \cref{lst:routing}.
+When a match is found, \texttt{get\_library\_full\_path()} resolves the on-disk location by invoking \texttt{dladdr()} on the calling library to discover the extracted-libraries directory, and passes the result to \linebreak \texttt{load\_decrypted\_library()}.  When no match is found, \texttt{BYTEHOOK\_CALL\_PREV} forwards the request to the original \texttt{\_\_loader\_dlopen}, incurring only the minimal passthrough overhead of the registry check (measured at approximately 50\,µs per call in benchmarks).  The registry check and routing callback are shown in \cref{lst:routing}.
 
 \begin{lstlisting}[
 language=ModernCpp,
@@ -1180,7 +1186,7 @@ static void* hooked_dlopen(const char* filename, int flags) {
 }
 \end{lstlisting}
 
-The callback declares only two parameters (\texttt{filename} and \texttt{flags}), whereas the underlying \texttt{\_\_loader\_dlopen} accepts an additional \texttt{caller\_addr} argument.  Because ByteHook operates at the PLT level, the original call frame, including the third argument in register \texttt{x2} on ARM64, is preserved when \texttt{BYTEHOOK\_CALL\_PREV} invokes the real function. The hook therefore does not need to forward the parameter explicitly.
+The callback declares only two parameters (\texttt{filename} and \texttt{flags}), whereas the underlying \linebreak \texttt{\_\_loader\_dlopen} accepts an additional \texttt{caller\_addr} argument.  Because ByteHook operates at the PLT level, the original call frame, including the third argument in register \texttt{x2} on ARM64, is preserved when \texttt{BYTEHOOK\_CALL\_PREV} invokes the real function. The hook therefore does not need to forward the parameter explicitly.
 
 Path resolution assumes \texttt{android:extractNativeLibs="true"}, meaning all \texttt{.so} files reside in a single directory under \texttt{/data/app/}.
 
@@ -1249,7 +1255,7 @@ Before attempting to load, the function checks bytes 0--3 of the decrypted buffe
 
 \subsubsection{Anonymous file descriptor creation with memfd\_create}
 
-\texttt{memfd\_create()} (Linux syscall \texttt{\_\_NR\_memfd\_create}, available since kernel 3.17 / Android API 26) returns a file descriptor backed exclusively by RAM.  The call uses \texttt{MFD\_CLOEXEC} so the descriptor is not inherited by child processes.
+\texttt{memfd\_create()} (Linux syscall \texttt{\_\_NR\_memfd\_create}, available since kernel 3.17 \cite{linux_memfd_create}) returns a file descriptor backed exclusively by RAM.  The call uses \texttt{MFD\_CLOEXEC} so the descriptor is not inherited by child processes.  The C library wrapper was added in glibc 2.27 \cite{linux_memfd_create}, but Android's bionic did not expose \texttt{memfd\_create()} until API level 30, so this implementation invokes the syscall directly.
 
 After creation, \texttt{ftruncate()} sizes the descriptor to the buffer length and \texttt{write()} copies the decrypted bytes into it.  A failed \texttt{memfd\_create()} (possible under extreme memory pressure or restrictive seccomp filters) causes the function to log the \texttt{errno} value and return \texttt{nullptr}.
 
@@ -1266,7 +1272,7 @@ The plaintext library exists only inside the process address space: first briefl
 
 An attacker who can attach a debugger or read \texttt{/proc/<pid>/mem} could still dump the decrypted image.  The prototype does not implement anti-debugging, memory sealing, or obfuscation.  These countermeasures are out of scope for the proof of concept but would be necessary in a hardened deployment.
 
-\subsection{Java-Native integration and load order}
+\subsection{Java-native integration and load order}
 
 Correct load sequencing is essential: hooks must be installed before any code, Java or native, requests a protected library.
 
@@ -1276,13 +1282,11 @@ Correct load sequencing is essential: hooks must be installed before any code, J
 
 \subsubsection{Native-to-native loading validation}
 
-The demo validates nested loading through \texttt{loadEncryptedLibrary()}, a JNI method in \texttt{liba} that internally calls \texttt{dlopen("liblibb.so", ...)} and \texttt{dlsym()} to resolve and invoke a function.  Because \texttt{liblibb.so} appears in the encrypted-library registry, the PLT hook intercepts the \texttt{dlopen()} call, decrypts the file from disk, and returns a valid handle, all entirely transparently to the caller.  From \texttt{liba}'s perspective, the load is indistinguishable from an ordinary \texttt{dlopen()} of an unprotected library.
+The demo validates nested loading through \texttt{loadEncryptedLibrary()}, a JNI method in \texttt{liba} that internally calls \texttt{dlopen("liblibb.so", ...)} and \texttt{dlsym()} to resolve and invoke a function.  Because \linebreak \texttt{liblibb.so} appears in the encrypted-library registry, the PLT hook intercepts the \texttt{dlopen()} call, decrypts the file from disk, and returns a valid handle, all entirely transparently to the caller.  From \texttt{liba}'s perspective, the load is indistinguishable from an ordinary \texttt{dlopen()} of an unprotected library.
 
 \subsubsection{JNI bridge}
 
 \texttt{jni\_bridge.cpp} exposes three native methods to the Java layer: \texttt{initialize()} (returns \texttt{JNI\_TRUE} to confirm hook installation), \texttt{getStatus()} (returns a status string), and \texttt{log()} (writes to Logcat through the native layer).  \texttt{JNI\_OnLoad()} is present only to satisfy the JNI protocol. It returns \texttt{JNI\_VERSION\_1\_6} without performing any initialization work because the constructor has already completed.
-
-\newpage
 
 \subsection{System testing}
 
@@ -1392,7 +1396,7 @@ Decrypting with the wrong key produced bytes that did not begin with \texttt{7f 
 
 \subsubsection{Load order enforcement}
 
-This test examines whether the ordering of the two calls in the static initialization block (\texttt{NativeCallHook.initialize()} and \texttt{System.loadLibrary("liba")}) affects correct operation. A test build was prepared with the static block reordered so that \texttt{System.\allowbreak loadLibrary("liba")} ran before \texttt{NativeCallHook.\allowbreak initialize()}.
+This test examines whether the ordering of the two calls in the static initialization block (\texttt{NativeCall\allowbreak Hook.initialize()} and \texttt{System.loadLibrary("liba")}) affects correct operation. A test build was prepared with the static block reordered so that \texttt{System.\allowbreak loadLibrary("liba")} ran before \texttt{NativeCallHook.\allowbreak initialize()}.
 
 \begin{verbatim}
 01:03:11.705 I NATIVECALLHOOK: dlopen hook installed successfully
@@ -1687,6 +1691,20 @@ Android Developers.
 2025. Available:
 \url{https://developer.android.com/ndk/reference/group/libdl}
 (Accessed: Nov. 16, 2025).
+
+\bibitem{aosp_bionic_libdl}
+Android Open Source Project.
+\textit{bionic/libdl/libdl.cpp -- dlopen and android\_dlopen\_ext implementation.}
+2025. Available:
+\url{https://cs.android.com/android/platform/superproject/main/+/main:bionic/libdl/libdl.cpp}
+(Accessed: May 26, 2026).
+
+\bibitem{linux_memfd_create}
+Linux man-pages project.
+\textit{memfd\_create(2) -- create an anonymous file.}
+2024. Available:
+\url{https://man7.org/linux/man-pages/man2/memfd_create.2.html}
+(Accessed: May 26, 2026).
 
 \end{thebibliography}
 
